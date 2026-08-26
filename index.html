@@ -4,149 +4,579 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bokklubben</title>
+
 <style>
-  :root{--bg:#f5f1ea;--card:#fffdf9;--ink:#292621;--muted:#7b746b;--line:#e5ddd2;--accent:#8d5d3b;--star:#d29a32}
-  *{box-sizing:border-box}
-  body{margin:0;background: linear-gradient(rgba(245,241,234,0.35), rgba(245,241,234,0.35)),
-    url("bokklubben-bg.png") center center / cover fixed; color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-  .wrap{max-width:1050px;margin:auto;padding:42px 20px 70px}
-  header{margin-bottom:28px}
-  h1{font-family:Georgia,serif;font-size:42px;margin:0 0 7px}
-  .sub{color:var(--muted)}
-  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0}
-  button,.select,input{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px 14px;color:var(--ink);font-size:15px}
-  button{cursor:pointer}
-  button.active{background:var(--ink);color:white;border-color:var(--ink)}
-  input{width:100%;font-family:inherit}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:15px}
-  .book{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:19px;box-shadow:0 3px 12px #00000008}
-  .num{font-size:12px;color:var(--muted);margin-bottom:7px}
-  .title{font-family:Georgia,serif;font-size:22px;line-height:1.15;margin-bottom:17px}
-  .rating{display:flex;align-items:center;gap:4px;margin-bottom:12px}
-  .star{font-size:29px;line-height:1;border:0;background:none;padding:0;cursor:pointer;color:#d8d0c5}
-  .star.on,.star.hover{color:var(--star)}
-  .avg{margin-left:auto;font-weight:700;font-size:14px}
-  .votes{color:var(--muted);font-weight:400}
-  .mine{font-size:13px;color:var(--muted);margin-top:5px}.mine b{color:var(--ink)}
-  .bar{height:6px;background:#eee8df;border-radius:99px;overflow:hidden;margin-top:12px}
-  .fill{height:100%;background:var(--star);border-radius:99px}
-  .legend{margin:25px 0 14px;color:var(--muted);font-size:13px}
-  .status{font-size:13px;color:var(--muted);margin-top:12px;min-height:20px}
-  .error{background:#fff0ed;border:1px solid #e6b8ad;color:#8b3b2d;padding:12px 14px;border-radius:12px;margin:15px 0}
-  .success{background:#edf8ef;border:1px solid #b8d9bd;color:#32633a;padding:12px 14px;border-radius:12px;margin:15px 0}
-  .loading{padding:25px 0;color:var(--muted)}
-  .form-card{max-width:600px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:0 3px 12px #00000008}
-  .form-label{display:block;font-weight:600;font-size:14px;margin:0 0 7px}
-  .form-group{margin-bottom:18px}
-  .primary{background:var(--ink);color:white;border-color:var(--ink)}
-  .primary:disabled{opacity:.5;cursor:default}
-  @media(max-width:600px){h1{font-size:34px}.wrap{padding-top:28px}.grid{grid-template-columns:1fr}}
+  :root{
+    --bg:#f5f1ea;
+    --card:rgba(255,253,249,0.95);
+    --card-solid:#fffdf9;
+    --ink:#292621;
+    --muted:#746d64;
+    --line:#e5ddd2;
+    --accent:#8d5d3b;
+    --star:#d29a32;
+    --shadow:0 8px 28px rgba(42,35,27,.13);
+  }
+
+  *{
+    box-sizing:border-box;
+  }
+
+  html{
+    scroll-behavior:smooth;
+  }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      linear-gradient(
+        rgba(245,241,234,.28),
+        rgba(245,241,234,.28)
+      ),
+      url("bokklubben-bg.jpg") center center / cover fixed;
+    color:var(--ink);
+    font-family:
+      Inter,
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      sans-serif;
+  }
+
+  /* Ett mjukt lager som gör text och kort lättare att läsa */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:rgba(250,246,238,.12);
+    pointer-events:none;
+    z-index:-1;
+  }
+
+  .wrap{
+    max-width:1080px;
+    margin:auto;
+    padding:44px 22px 80px;
+  }
+
+  header{
+    margin-bottom:24px;
+  }
+
+  h1{
+    font-family:Georgia,serif;
+    font-size:44px;
+    line-height:1.05;
+    margin:0 0 8px;
+    letter-spacing:-.8px;
+    text-shadow:0 2px 10px rgba(255,255,255,.75);
+  }
+
+  .sub{
+    color:var(--ink);
+    font-size:14px;
+    font-weight:500;
+    opacity:.78;
+  }
+
+  /* --------------------------------------------------
+     KNAPPAR
+     -------------------------------------------------- */
+
+  .toolbar{
+    display:flex;
+    gap:9px;
+    flex-wrap:wrap;
+    margin:20px 0;
+  }
+
+  button,
+  .select,
+  input{
+    border:1px solid rgba(229,221,210,.95);
+    background:rgba(255,253,249,.96);
+    border-radius:12px;
+    padding:10px 14px;
+    color:var(--ink);
+    font-size:15px;
+    font-family:inherit;
+  }
+
+  button{
+    cursor:pointer;
+    transition:
+      transform .12s ease,
+      box-shadow .12s ease,
+      background .12s ease,
+      border-color .12s ease;
+  }
+
+  button:hover:not(:disabled){
+    transform:translateY(-1px);
+    box-shadow:0 4px 12px rgba(42,35,27,.10);
+  }
+
+  button:active:not(:disabled){
+    transform:translateY(0);
+  }
+
+  button.active{
+    background:var(--ink);
+    color:white;
+    border-color:var(--ink);
+    box-shadow:0 4px 12px rgba(42,35,27,.16);
+  }
+
+  button.primary{
+    background:var(--ink);
+    color:white;
+    border-color:var(--ink);
+    font-weight:600;
+  }
+
+  button.primary:hover:not(:disabled){
+    background:#403a34;
+  }
+
+  button:disabled{
+    cursor:default;
+  }
+
+  input{
+    width:100%;
+    font-family:inherit;
+    outline:none;
+    transition:
+      border-color .15s ease,
+      box-shadow .15s ease;
+  }
+
+  input:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(141,93,59,.12);
+  }
+
+  /* --------------------------------------------------
+     BÖCKER
+     -------------------------------------------------- */
+
+  .grid{
+    display:grid;
+    grid-template-columns:
+      repeat(auto-fill,minmax(290px,1fr));
+    gap:16px;
+  }
+
+  .book{
+    background:var(--card);
+    border:1px solid rgba(229,221,210,.9);
+    border-radius:19px;
+    padding:20px;
+    box-shadow:var(--shadow);
+    backdrop-filter:blur(2px);
+    transition:
+      transform .16s ease,
+      box-shadow .16s ease;
+  }
+
+  .book:hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 32px rgba(42,35,27,.17);
+  }
+
+  .num{
+    font-size:12px;
+    color:var(--muted);
+    margin-bottom:7px;
+    letter-spacing:.4px;
+  }
+
+  .title{
+    font-family:Georgia,serif;
+    font-size:22px;
+    line-height:1.15;
+    margin-bottom:17px;
+  }
+
+  .author{
+    font-size:13px;
+    color:var(--muted);
+    margin-top:-10px;
+    margin-bottom:15px;
+  }
+
+  /* --------------------------------------------------
+     BETYG
+     -------------------------------------------------- */
+
+  .rating{
+    display:flex;
+    align-items:center;
+    gap:3px;
+    margin-bottom:12px;
+  }
+
+  .star{
+    font-size:29px;
+    line-height:1;
+    border:0;
+    background:none;
+    padding:0 1px;
+    cursor:pointer;
+    color:#d8d0c5;
+    box-shadow:none;
+  }
+
+  .star:hover:not(:disabled){
+    color:var(--star);
+    box-shadow:none;
+    transform:scale(1.08);
+  }
+
+  .star.on{
+    color:var(--star);
+  }
+
+  .avg{
+    margin-left:auto;
+    font-weight:750;
+    font-size:14px;
+  }
+
+  .votes{
+    color:var(--muted);
+    font-weight:400;
+  }
+
+  .mine{
+    font-size:13px;
+    color:var(--muted);
+    margin-top:5px;
+  }
+
+  .mine b{
+    color:var(--ink);
+  }
+
+  .bar{
+    height:6px;
+    background:#eee8df;
+    border-radius:99px;
+    overflow:hidden;
+    margin-top:12px;
+  }
+
+  .fill{
+    height:100%;
+    background:var(--star);
+    border-radius:99px;
+    transition:width .25s ease;
+  }
+
+  /* --------------------------------------------------
+     TEXT / STATUS
+     -------------------------------------------------- */
+
+  .legend{
+    margin:24px 0 14px;
+    color:var(--muted);
+    font-size:13px;
+  }
+
+  .status{
+    font-size:13px;
+    color:var(--muted);
+    margin-top:12px;
+    min-height:20px;
+  }
+
+  .error{
+    background:#fff0ed;
+    border:1px solid #e6b8ad;
+    color:#8b3b2d;
+    padding:13px 15px;
+    border-radius:13px;
+    margin:15px 0;
+    box-shadow:0 4px 14px rgba(80,35,25,.08);
+  }
+
+  .success{
+    background:#edf8ef;
+    border:1px solid #b8d9bd;
+    color:#32633a;
+    padding:13px 15px;
+    border-radius:13px;
+    margin:15px 0;
+  }
+
+  .loading{
+    padding:30px 0;
+    color:var(--muted);
+  }
+
+  /* --------------------------------------------------
+     LÄGG TILL BOK
+     -------------------------------------------------- */
+
+  .form-card{
+    max-width:600px;
+    background:var(--card);
+    border:1px solid rgba(229,221,210,.9);
+    border-radius:19px;
+    padding:25px;
+    box-shadow:var(--shadow);
+  }
+
+  .form-label{
+    display:block;
+    font-weight:650;
+    font-size:14px;
+    margin:0 0 7px;
+  }
+
+  .form-group{
+    margin-bottom:18px;
+  }
+
+  /* --------------------------------------------------
+     ÖVERSIKT
+     -------------------------------------------------- */
+
+  .overview-member{
+    display:flex;
+    justify-content:space-between;
+    padding:8px 0;
+    border-top:1px solid var(--line);
+    font-size:14px;
+  }
+
+  .overview-score{
+    font-size:32px;
+    font-weight:800;
+    margin:2px 0 4px;
+  }
+
+  .overview-stars{
+    font-size:22px;
+    color:var(--star);
+  }
+
+  /* --------------------------------------------------
+     MOBIL
+     -------------------------------------------------- */
+
+  @media(max-width:700px){
+
+    .wrap{
+      padding:28px 15px 60px;
+    }
+
+    h1{
+      font-size:36px;
+    }
+
+    .grid{
+      grid-template-columns:1fr;
+      gap:13px;
+    }
+
+    .book{
+      padding:18px;
+    }
+
+    .toolbar{
+      gap:8px;
+    }
+
+    button{
+      padding:10px 13px;
+    }
+  }
+
+  @media(max-width:420px){
+
+    h1{
+      font-size:32px;
+    }
+
+    .sub{
+      font-size:13px;
+    }
+
+    .star{
+      font-size:27px;
+    }
+  }
 </style>
 </head>
 
 <body>
+
 <div class="wrap">
 
-<header>
-  <h1>📚 Bokklubben</h1>
-  <div class="sub" id="subtitle">Laddar…</div>
-</header>
+  <header>
+    <h1>📚 Bokklubben</h1>
+    <div class="sub" id="subtitle">Laddar…</div>
+  </header>
 
-<div class="toolbar" id="tabs"></div>
+  <div class="toolbar" id="tabs"></div>
 
-<div id="content">
-  <div class="loading">Hämtar böcker och betyg…</div>
+  <div id="content">
+    <div class="loading">
+      Hämtar böcker och betyg…
+    </div>
+  </div>
+
 </div>
 
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-const SUPABASE_URL = "https://iunoonvcydjjhpnqryrp.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_gLvrE3BmoYF4X-GadC7Otw_rMN7bnMn";
+
+const SUPABASE_URL =
+  "https://iunoonvcydjjhpnqryrp.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_gLvrE3BmoYF4X-GadC7Otw_rMN7bnMn";
 
 const db = supabase.createClient(
   SUPABASE_URL,
   SUPABASE_PUBLISHABLE_KEY
 );
 
+
 let members = [];
 let books = [];
 let ratings = [];
 
 let selected =
-  localStorage.getItem("bokklubbSelectedMember") || "Gustav";
+  localStorage.getItem("bokklubbSelectedMember") ||
+  "Gustav";
 
 let tab = "rate";
 
+
 function esc(s){
-  return String(s ?? "").replace(/[&<>"']/g, c => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#39;"
-  }[c]));
+
+  return String(s ?? "").replace(
+    /[&<>"']/g,
+    c => ({
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      '"':"&quot;",
+      "'":"&#39;"
+    }[c])
+  );
+
 }
 
+
 function getRating(bookId, memberId){
+
   const r = ratings.find(
-    x => x.book_id === bookId && x.member_id === memberId
+    x =>
+      x.book_id === bookId &&
+      x.member_id === memberId
   );
 
   return r ? r.rating : null;
+
 }
+
 
 function getBookRatings(bookId){
-  return members.map(m => getRating(bookId, m.id));
+
+  return members.map(
+    m => getRating(bookId, m.id)
+  );
+
 }
 
+
 function avg(vals){
-  const v = vals.filter(x => x != null);
+
+  const v =
+    vals.filter(x => x != null);
 
   return v.length
     ? v.reduce((a,b)=>a+b,0) / v.length
     : 0;
+
 }
+
+
+/* --------------------------------------------------
+   NAVIGATION
+   -------------------------------------------------- */
 
 function renderTabs(){
 
   document.getElementById("tabs").innerHTML =
 
-    `<button class="${tab==='rate'?'active':''}"
+    `<button
+      class="${tab==='rate'?'active':''}"
       onclick="tab='rate';render()">
       ⭐ Sätt betyg
-    </button>
+    </button>`
 
-    <button class="${tab==='overview'?'active':''}"
+    +
+
+    `<button
+      class="${tab==='overview'?'active':''}"
       onclick="tab='overview';render()">
       📊 Översikt
-    </button>
+    </button>`
 
-    <button class="${tab==='add'?'active':''}"
+    +
+
+    `<button
+      class="${tab==='add'?'active':''}"
       onclick="tab='add';render()">
       ➕ Lägg till bok
     </button>`;
+
 }
+
+
+/* --------------------------------------------------
+   MEDLEMMAR
+   -------------------------------------------------- */
 
 function renderMembers(){
 
-  const el = document.getElementById("members");
+  const el =
+    document.getElementById("members");
 
   el.innerHTML =
-    `<strong style="width:100%;font-size:14px;color:var(--muted)">
+
+    `<strong
+      style="
+        width:100%;
+        font-size:14px;
+        color:var(--muted);
+      ">
       Vem är du?
-    </strong>` +
+    </strong>`
+
+    +
 
     members.map(m =>
+
       `<button
         class="${m.name===selected?'active':''}"
         onclick="chooseMember('${esc(m.name)}')">
         👤 ${esc(m.name)}
       </button>`
+
     ).join("");
+
 }
+
 
 function chooseMember(name){
 
@@ -158,13 +588,20 @@ function chooseMember(name){
   );
 
   render();
+
 }
+
+
+/* --------------------------------------------------
+   BOKKORT
+   -------------------------------------------------- */
 
 function renderBooks(){
 
   const member =
-    members.find(m => m.name === selected) ||
-    members[0];
+    members.find(
+      m => m.name === selected
+    ) || members[0];
 
   if(!member) return;
 
@@ -172,12 +609,24 @@ function renderBooks(){
 
     books.map((b,i)=>{
 
-      const vals = getBookRatings(b.id);
-      const mine = getRating(b.id, member.id);
+      const vals =
+        getBookRatings(b.id);
+
+      const mine =
+        getRating(
+          b.id,
+          member.id
+        );
+
       const a = avg(vals);
-      const valid = vals.filter(x=>x!=null);
+
+      const valid =
+        vals.filter(
+          x => x != null
+        );
 
       return `
+
       <article class="book">
 
         <div class="num">
@@ -189,7 +638,7 @@ function renderBooks(){
         </div>
 
         ${b.author ? `
-          <div style="font-size:13px;color:var(--muted);margin-top:-12px;margin-bottom:15px">
+          <div class="author">
             ${esc(b.author)}
           </div>
         ` : ""}
@@ -197,16 +646,19 @@ function renderBooks(){
         <div class="rating">
 
           ${[1,2,3,4,5].map(n =>
+
             `<button
               class="star ${mine>=n?'on':''}"
               aria-label="${n} av 5 stjärnor"
               onclick="rate(${b.id},${n})">
               ★
             </button>`
+
           ).join("")}
 
           <div class="avg">
-            ${a?a.toFixed(1):"—"}
+            ${a ? a.toFixed(1) : "—"}
+
             <span class="votes">
               (${valid.length})
             </span>
@@ -216,7 +668,9 @@ function renderBooks(){
 
         <div class="mine">
           Ditt betyg:
-          <b>${mine?mine+" / 5":"inte satt"}</b>
+          <b>
+            ${mine ? mine+" / 5" : "inte satt"}
+          </b>
         </div>
 
         <div class="bar">
@@ -227,36 +681,54 @@ function renderBooks(){
         </div>
 
       </article>`;
+
     }).join("");
+
 }
 
-async function rate(bookId, value){
+
+/* --------------------------------------------------
+   SÄTT BETYG
+   -------------------------------------------------- */
+
+async function rate(bookId,value){
 
   const member =
-    members.find(m => m.name === selected);
+    members.find(
+      m => m.name === selected
+    );
 
   if(!member) return;
 
   document
     .querySelectorAll(".star")
-    .forEach(b => b.disabled = true);
-
-  const { error } = await db
-    .from("ratings")
-    .upsert(
-      {
-        book_id: bookId,
-        member_id: member.id,
-        rating: value
-      },
-      {
-        onConflict: "book_id,member_id"
-      }
+    .forEach(
+      b => b.disabled = true
     );
+
+
+  const { error } =
+    await db
+      .from("ratings")
+      .upsert(
+        {
+          book_id:bookId,
+          member_id:member.id,
+          rating:value
+        },
+        {
+          onConflict:
+            "book_id,member_id"
+        }
+      );
+
 
   document
     .querySelectorAll(".star")
-    .forEach(b => b.disabled = false);
+    .forEach(
+      b => b.disabled = false
+    );
+
 
   if(error){
 
@@ -268,24 +740,39 @@ async function rate(bookId, value){
     return;
   }
 
+
   await loadData();
 
   render();
+
 }
+
+
+/* --------------------------------------------------
+   ÖVERSIKT
+   -------------------------------------------------- */
 
 function renderOverview(){
 
-  const rows = books.map(b=>{
+  const rows =
 
-    const vals = getBookRatings(b.id);
+    books
+      .map(b=>{
 
-    return {
-      book:b,
-      vals,
-      avg:avg(vals)
-    };
+        const vals =
+          getBookRatings(b.id);
 
-  }).sort((a,b)=>b.avg-a.avg);
+        return {
+          book:b,
+          vals,
+          avg:avg(vals)
+        };
+
+      })
+      .sort(
+        (a,b)=>b.avg-a.avg
+      );
+
 
   document.getElementById("content").innerHTML =
 
@@ -309,47 +796,61 @@ function renderOverview(){
           </div>
 
           ${r.book.author ? `
-            <div style="font-size:13px;color:var(--muted);margin-top:-12px;margin-bottom:15px">
+            <div class="author">
               ${esc(r.book.author)}
             </div>
           ` : ""}
 
-          <div style="font-size:32px;font-weight:800;margin:2px 0 4px">
-            ${r.avg?r.avg.toFixed(1):"—"}
+          <div class="overview-score">
+            ${r.avg
+              ? r.avg.toFixed(1)
+              : "—"}
           </div>
 
-          <div class="rating" style="margin-bottom:14px">
+          <div
+            class="rating"
+            style="margin-bottom:14px">
 
-            <span style="font-size:22px;color:var(--star)">
+            <span class="overview-stars">
               ${r.avg
-                ?"★".repeat(Math.round(r.avg))
-                :"☆☆☆☆☆"}
+                ? "★".repeat(
+                    Math.round(r.avg)
+                  )
+                : "☆☆☆☆☆"}
             </span>
 
             <span class="votes">
-              ${r.vals.filter(x=>x!=null).length} röster
+              ${r.vals.filter(
+                x=>x!=null
+              ).length}
+              röster
             </span>
 
           </div>
 
           ${members.map((m,j)=>`
 
-            <div style="
-              display:flex;
-              justify-content:space-between;
-              padding:7px 0;
-              border-top:1px solid var(--line);
-              font-size:14px">
+            <div class="overview-member">
 
               <span>
                 ${esc(m.name)}
               </span>
 
-              <span style="color:var(--star)">
+              <span
+                style="color:var(--star)">
+
                 ${r.vals[j]
-                  ?("★".repeat(r.vals[j])+
-                    "☆".repeat(5-r.vals[j]))
-                  :"—"}
+                  ? (
+                    "★".repeat(
+                      r.vals[j]
+                    )
+                    +
+                    "☆".repeat(
+                      5-r.vals[j]
+                    )
+                  )
+                  : "—"}
+
               </span>
 
             </div>
@@ -361,7 +862,13 @@ function renderOverview(){
       `).join("")}
 
     </div>`;
+
 }
+
+
+/* --------------------------------------------------
+   LÄGG TILL BOK
+   -------------------------------------------------- */
 
 function renderAddBook(){
 
@@ -369,14 +876,17 @@ function renderAddBook(){
 
     `<div class="legend">
       Lägg till en ny bok i bokklubben.
-      Den blir automatiskt tillgänglig för alla medlemmar att betygsätta.
+      Den blir automatiskt tillgänglig
+      för alla medlemmar att betygsätta.
     </div>
 
     <div class="form-card">
 
       <div class="form-group">
 
-        <label class="form-label" for="bookTitle">
+        <label
+          class="form-label"
+          for="bookTitle">
           Titel *
         </label>
 
@@ -388,9 +898,12 @@ function renderAddBook(){
 
       </div>
 
+
       <div class="form-group">
 
-        <label class="form-label" for="bookAuthor">
+        <label
+          class="form-label"
+          for="bookAuthor">
           Författare
         </label>
 
@@ -402,12 +915,16 @@ function renderAddBook(){
 
       </div>
 
+
       <button
         class="primary"
         id="addBookButton"
         onclick="addBook()">
+
         ➕ Lägg till bok
+
       </button>
+
 
       <div
         id="addBookStatus"
@@ -415,27 +932,39 @@ function renderAddBook(){
       </div>
 
     </div>`;
+
 }
+
 
 async function addBook(){
 
   const titleInput =
-    document.getElementById("bookTitle");
+    document.getElementById(
+      "bookTitle"
+    );
 
   const authorInput =
-    document.getElementById("bookAuthor");
+    document.getElementById(
+      "bookAuthor"
+    );
 
   const button =
-    document.getElementById("addBookButton");
+    document.getElementById(
+      "addBookButton"
+    );
 
   const status =
-    document.getElementById("addBookStatus");
+    document.getElementById(
+      "addBookStatus"
+    );
+
 
   const title =
     titleInput.value.trim();
 
   const author =
     authorInput.value.trim();
+
 
   if(!title){
 
@@ -447,19 +976,23 @@ async function addBook(){
     return;
   }
 
+
   button.disabled = true;
 
   status.textContent =
     "Lägger till boken…";
 
-  const { data, error } = await db
-    .from("books")
-    .insert({
-      title:title,
-      author:author || null
-    })
-    .select()
-    .single();
+
+  const {data,error} =
+    await db
+      .from("books")
+      .insert({
+        title:title,
+        author:author || null
+      })
+      .select()
+      .single();
+
 
   if(error){
 
@@ -475,12 +1008,21 @@ async function addBook(){
     return;
   }
 
+
   await loadData();
 
+
   status.innerHTML =
+
     `<span style="color:#32633a">
-      ✓ <b>${esc(data.title)}</b> har lagts till!
+
+      ✓ <b>
+        ${esc(data.title)}
+      </b>
+      har lagts till!
+
     </span>`;
+
 
   titleInput.value = "";
   authorInput.value = "";
@@ -489,85 +1031,145 @@ async function addBook(){
 
   renderTabs();
 
-  setTimeout(() => {
+
+  setTimeout(()=>{
 
     tab = "rate";
+
     render();
 
-  }, 1200);
+  },1200);
+
 }
+
+
+/* --------------------------------------------------
+   FEL
+   -------------------------------------------------- */
 
 function showError(msg){
 
   document
     .getElementById("content")
     .insertAdjacentHTML(
+
       "afterbegin",
+
       `<div class="error">
         ${esc(msg)}
       </div>`
+
     );
+
 }
+
+
+/* --------------------------------------------------
+   RENDER
+   -------------------------------------------------- */
 
 function render(){
 
   renderTabs();
 
+
   if(tab==="rate"){
 
-    document.getElementById("content").innerHTML =
+    document.getElementById(
+      "content"
+    ).innerHTML =
 
-      `<div class="toolbar" id="members"></div>
+      `<div
+        class="toolbar"
+        id="members">
+      </div>
 
-       <div class="legend">
-         Välj medlem och klicka sedan på
-         stjärnorna för att sätta betyg.
-       </div>
+      <div class="legend">
+        Välj medlem och klicka sedan
+        på stjärnorna för att sätta betyg.
+      </div>
 
-       <div class="grid" id="books"></div>`;
+      <div
+        class="grid"
+        id="books">
+      </div>`;
+
 
     renderMembers();
+
     renderBooks();
 
-  } else if(tab==="overview"){
+  }
+
+
+  else if(tab==="overview"){
 
     renderOverview();
 
-  } else if(tab==="add"){
+  }
+
+
+  else if(tab==="add"){
 
     renderAddBook();
 
   }
+
 }
+
+
+/* --------------------------------------------------
+   HÄMTA DATA FRÅN SUPABASE
+   -------------------------------------------------- */
 
 async function loadData(){
 
-  const [mRes,bRes,rRes] =
-    await Promise.all([
+  const [
+    mRes,
+    bRes,
+    rRes
+  ] = await Promise.all([
 
-      db
-        .from("members")
-        .select("id,name")
-        .order("id"),
+    db
+      .from("members")
+      .select("id,name")
+      .order("id"),
 
-      db
-        .from("books")
-        .select("id,title,author,created_at")
-        .order("id"),
+    db
+      .from("books")
+      .select(
+        "id,title,author,created_at"
+      )
+      .order("id"),
 
-      db
-        .from("ratings")
-        .select("id,book_id,member_id,rating")
+    db
+      .from("ratings")
+      .select(
+        "id,book_id,member_id,rating"
+      )
 
-    ]);
+  ]);
 
-  if(mRes.error) throw mRes.error;
-  if(bRes.error) throw bRes.error;
-  if(rRes.error) throw rRes.error;
 
-  members = mRes.data || [];
-  books = bRes.data || [];
-  ratings = rRes.data || [];
+  if(mRes.error)
+    throw mRes.error;
+
+  if(bRes.error)
+    throw bRes.error;
+
+  if(rRes.error)
+    throw rRes.error;
+
+
+  members =
+    mRes.data || [];
+
+  books =
+    bRes.data || [];
+
+  ratings =
+    rRes.data || [];
+
 
   if(
     !members.some(
@@ -578,15 +1180,24 @@ async function loadData(){
     selected =
       members[0]?.name ||
       "Gustav";
+
   }
+
 
   document
     .getElementById("subtitle")
     .textContent =
+
       `${books.length} böcker · ` +
       `${members.length} medlemmar · ` +
       `betyg 1–5`;
+
 }
+
+
+/* --------------------------------------------------
+   START
+   -------------------------------------------------- */
 
 (async function init(){
 
@@ -596,24 +1207,33 @@ async function loadData(){
 
     render();
 
-  }catch(e){
+  }
 
-    document.getElementById("content").innerHTML =
+  catch(e){
+
+    document
+      .getElementById("content")
+      .innerHTML =
 
       `<div class="error">
 
         <b>
-          Kunde inte ansluta till Bokklubbens databas.
+          Kunde inte ansluta
+          till Bokklubbens databas.
         </b>
 
         <br>
 
-        ${esc(e.message || e)}
+        ${esc(
+          e.message || e
+        )}
 
       </div>`;
+
   }
 
 })();
+
 </script>
 
 </body>
