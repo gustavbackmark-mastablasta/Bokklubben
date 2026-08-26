@@ -13,9 +13,10 @@
   h1{font-family:Georgia,serif;font-size:42px;margin:0 0 7px}
   .sub{color:var(--muted)}
   .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0}
-  button,.select{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px 14px;color:var(--ink);font-size:15px}
+  button,.select,input{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px 14px;color:var(--ink);font-size:15px}
   button{cursor:pointer}
   button.active{background:var(--ink);color:white;border-color:var(--ink)}
+  input{width:100%;font-family:inherit}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:15px}
   .book{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:19px;box-shadow:0 3px 12px #00000008}
   .num{font-size:12px;color:var(--muted);margin-bottom:7px}
@@ -31,40 +32,68 @@
   .legend{margin:25px 0 14px;color:var(--muted);font-size:13px}
   .status{font-size:13px;color:var(--muted);margin-top:12px;min-height:20px}
   .error{background:#fff0ed;border:1px solid #e6b8ad;color:#8b3b2d;padding:12px 14px;border-radius:12px;margin:15px 0}
+  .success{background:#edf8ef;border:1px solid #b8d9bd;color:#32633a;padding:12px 14px;border-radius:12px;margin:15px 0}
   .loading{padding:25px 0;color:var(--muted)}
+  .form-card{max-width:600px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:0 3px 12px #00000008}
+  .form-label{display:block;font-weight:600;font-size:14px;margin:0 0 7px}
+  .form-group{margin-bottom:18px}
+  .primary{background:var(--ink);color:white;border-color:var(--ink)}
+  .primary:disabled{opacity:.5;cursor:default}
   @media(max-width:600px){h1{font-size:34px}.wrap{padding-top:28px}.grid{grid-template-columns:1fr}}
 </style>
 </head>
+
 <body>
 <div class="wrap">
+
 <header>
   <h1>📚 Bokklubben</h1>
   <div class="sub" id="subtitle">Laddar…</div>
 </header>
+
 <div class="toolbar" id="tabs"></div>
-<div id="content"><div class="loading">Hämtar böcker och betyg…</div></div>
+
+<div id="content">
+  <div class="loading">Hämtar böcker och betyg…</div>
+</div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
 const SUPABASE_URL = "https://iunoonvcydjjhpnqryrp.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_gLvrE3BmoYF4X-GadC7Otw_rMN7bnMn";
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+const db = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
 
 let members = [];
 let books = [];
 let ratings = [];
-let selected = localStorage.getItem("bokklubbSelectedMember") || "Gustav";
+
+let selected =
+  localStorage.getItem("bokklubbSelectedMember") || "Gustav";
+
 let tab = "rate";
 
 function esc(s){
   return String(s ?? "").replace(/[&<>"']/g, c => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
   }[c]));
 }
 
 function getRating(bookId, memberId){
-  const r = ratings.find(x => x.book_id === bookId && x.member_id === memberId);
+  const r = ratings.find(
+    x => x.book_id === bookId && x.member_id === memberId
+  );
+
   return r ? r.rating : null;
 }
 
@@ -74,128 +103,462 @@ function getBookRatings(bookId){
 
 function avg(vals){
   const v = vals.filter(x => x != null);
-  return v.length ? v.reduce((a,b)=>a+b,0)/v.length : 0;
+
+  return v.length
+    ? v.reduce((a,b)=>a+b,0) / v.length
+    : 0;
 }
 
 function renderTabs(){
+
   document.getElementById("tabs").innerHTML =
-    `<button class="${tab==='rate'?'active':''}" onclick="tab='rate';render()">⭐ Sätt betyg</button>
-     <button class="${tab==='overview'?'active':''}" onclick="tab='overview';render()">📊 Översikt</button>`;
+
+    `<button class="${tab==='rate'?'active':''}"
+      onclick="tab='rate';render()">
+      ⭐ Sätt betyg
+    </button>
+
+    <button class="${tab==='overview'?'active':''}"
+      onclick="tab='overview';render()">
+      📊 Översikt
+    </button>
+
+    <button class="${tab==='add'?'active':''}"
+      onclick="tab='add';render()">
+      ➕ Lägg till bok
+    </button>`;
 }
 
 function renderMembers(){
+
   const el = document.getElementById("members");
+
   el.innerHTML =
-    `<strong style="width:100%;font-size:14px;color:var(--muted)">Vem är du?</strong>` +
+    `<strong style="width:100%;font-size:14px;color:var(--muted)">
+      Vem är du?
+    </strong>` +
+
     members.map(m =>
-      `<button class="${m.name===selected?'active':''}" onclick="chooseMember('${esc(m.name)}')">👤 ${esc(m.name)}</button>`
+      `<button
+        class="${m.name===selected?'active':''}"
+        onclick="chooseMember('${esc(m.name)}')">
+        👤 ${esc(m.name)}
+      </button>`
     ).join("");
 }
 
 function chooseMember(name){
+
   selected = name;
-  localStorage.setItem("bokklubbSelectedMember", selected);
+
+  localStorage.setItem(
+    "bokklubbSelectedMember",
+    selected
+  );
+
   render();
 }
 
 function renderBooks(){
-  const member = members.find(m => m.name === selected) || members[0];
+
+  const member =
+    members.find(m => m.name === selected) ||
+    members[0];
+
   if(!member) return;
 
-  document.getElementById("books").innerHTML = books.map((b,i)=>{
-    const vals = getBookRatings(b.id);
-    const mine = getRating(b.id, member.id);
-    const a = avg(vals);
-    const valid = vals.filter(x=>x!=null);
+  document.getElementById("books").innerHTML =
 
-    return `<article class="book">
-      <div class="num">#${String(i+1).padStart(2,"0")}</div>
-      <div class="title">${esc(b.title)}</div>
-      <div class="rating">
-        ${[1,2,3,4,5].map(n =>
-          `<button class="star ${mine>=n?'on':''}" aria-label="${n} av 5 stjärnor"
-             onclick="rate(${b.id},${n})">★</button>`
-        ).join("")}
-        <div class="avg">${a?a.toFixed(1):"—"} <span class="votes">(${valid.length})</span></div>
-      </div>
-      <div class="mine">Ditt betyg: <b>${mine?mine+" / 5":"inte satt"}</b></div>
-      <div class="bar"><div class="fill" style="width:${a*20}%"></div></div>
-    </article>`;
-  }).join("");
+    books.map((b,i)=>{
+
+      const vals = getBookRatings(b.id);
+      const mine = getRating(b.id, member.id);
+      const a = avg(vals);
+      const valid = vals.filter(x=>x!=null);
+
+      return `
+      <article class="book">
+
+        <div class="num">
+          #${String(i+1).padStart(2,"0")}
+        </div>
+
+        <div class="title">
+          ${esc(b.title)}
+        </div>
+
+        ${b.author ? `
+          <div style="font-size:13px;color:var(--muted);margin-top:-12px;margin-bottom:15px">
+            ${esc(b.author)}
+          </div>
+        ` : ""}
+
+        <div class="rating">
+
+          ${[1,2,3,4,5].map(n =>
+            `<button
+              class="star ${mine>=n?'on':''}"
+              aria-label="${n} av 5 stjärnor"
+              onclick="rate(${b.id},${n})">
+              ★
+            </button>`
+          ).join("")}
+
+          <div class="avg">
+            ${a?a.toFixed(1):"—"}
+            <span class="votes">
+              (${valid.length})
+            </span>
+          </div>
+
+        </div>
+
+        <div class="mine">
+          Ditt betyg:
+          <b>${mine?mine+" / 5":"inte satt"}</b>
+        </div>
+
+        <div class="bar">
+          <div
+            class="fill"
+            style="width:${a*20}%">
+          </div>
+        </div>
+
+      </article>`;
+    }).join("");
 }
 
 async function rate(bookId, value){
-  const member = members.find(m => m.name === selected);
+
+  const member =
+    members.find(m => m.name === selected);
+
   if(!member) return;
 
-  document.querySelectorAll(".star").forEach(b => b.disabled = true);
+  document
+    .querySelectorAll(".star")
+    .forEach(b => b.disabled = true);
 
-  const { error } = await db.from("ratings").upsert(
-    {book_id: bookId, member_id: member.id, rating: value},
-    {onConflict: "book_id,member_id"}
-  );
+  const { error } = await db
+    .from("ratings")
+    .upsert(
+      {
+        book_id: bookId,
+        member_id: member.id,
+        rating: value
+      },
+      {
+        onConflict: "book_id,member_id"
+      }
+    );
 
-  document.querySelectorAll(".star").forEach(b => b.disabled = false);
+  document
+    .querySelectorAll(".star")
+    .forEach(b => b.disabled = false);
 
   if(error){
-    showError("Kunde inte spara betyget: " + error.message);
+
+    showError(
+      "Kunde inte spara betyget: " +
+      error.message
+    );
+
     return;
   }
 
   await loadData();
+
   render();
 }
 
 function renderOverview(){
+
   const rows = books.map(b=>{
+
     const vals = getBookRatings(b.id);
-    return {book:b, vals, avg:avg(vals)};
+
+    return {
+      book:b,
+      vals,
+      avg:avg(vals)
+    };
+
   }).sort((a,b)=>b.avg-a.avg);
 
   document.getElementById("content").innerHTML =
-    `<div class="legend">Alla medlemmars betyg på samma ställe. Böckerna sorteras efter snittbetyg.</div>
-     <div class="grid">${rows.map((r,i)=>`
-       <article class="book">
-         <div class="num">#${i+1}</div>
-         <div class="title">${esc(r.book.title)}</div>
-         <div style="font-size:32px;font-weight:800;margin:2px 0 4px">${r.avg?r.avg.toFixed(1):"—"}</div>
-         <div class="rating" style="margin-bottom:14px">
-           <span style="font-size:22px;color:var(--star)">${r.avg?"★".repeat(Math.round(r.avg)):"☆☆☆☆☆"}</span>
-           <span class="votes">${r.vals.filter(x=>x!=null).length} röster</span>
-         </div>
-         ${members.map((m,j)=>`
-           <div style="display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid var(--line);font-size:14px">
-             <span>${esc(m.name)}</span>
-             <span style="color:var(--star)">${r.vals[j]?("★".repeat(r.vals[j])+"☆".repeat(5-r.vals[j])):"—"}</span>
-           </div>`).join("")}
-       </article>`).join("")}</div>`;
+
+    `<div class="legend">
+      Alla medlemmars betyg på samma ställe.
+      Böckerna sorteras efter snittbetyg.
+    </div>
+
+    <div class="grid">
+
+      ${rows.map((r,i)=>`
+
+        <article class="book">
+
+          <div class="num">
+            #${i+1}
+          </div>
+
+          <div class="title">
+            ${esc(r.book.title)}
+          </div>
+
+          ${r.book.author ? `
+            <div style="font-size:13px;color:var(--muted);margin-top:-12px;margin-bottom:15px">
+              ${esc(r.book.author)}
+            </div>
+          ` : ""}
+
+          <div style="font-size:32px;font-weight:800;margin:2px 0 4px">
+            ${r.avg?r.avg.toFixed(1):"—"}
+          </div>
+
+          <div class="rating" style="margin-bottom:14px">
+
+            <span style="font-size:22px;color:var(--star)">
+              ${r.avg
+                ?"★".repeat(Math.round(r.avg))
+                :"☆☆☆☆☆"}
+            </span>
+
+            <span class="votes">
+              ${r.vals.filter(x=>x!=null).length} röster
+            </span>
+
+          </div>
+
+          ${members.map((m,j)=>`
+
+            <div style="
+              display:flex;
+              justify-content:space-between;
+              padding:7px 0;
+              border-top:1px solid var(--line);
+              font-size:14px">
+
+              <span>
+                ${esc(m.name)}
+              </span>
+
+              <span style="color:var(--star)">
+                ${r.vals[j]
+                  ?("★".repeat(r.vals[j])+
+                    "☆".repeat(5-r.vals[j]))
+                  :"—"}
+              </span>
+
+            </div>
+
+          `).join("")}
+
+        </article>
+
+      `).join("")}
+
+    </div>`;
+}
+
+function renderAddBook(){
+
+  document.getElementById("content").innerHTML =
+
+    `<div class="legend">
+      Lägg till en ny bok i bokklubben.
+      Den blir automatiskt tillgänglig för alla medlemmar att betygsätta.
+    </div>
+
+    <div class="form-card">
+
+      <div class="form-group">
+
+        <label class="form-label" for="bookTitle">
+          Titel *
+        </label>
+
+        <input
+          id="bookTitle"
+          type="text"
+          placeholder="T.ex. Hundra år av ensamhet"
+          autocomplete="off">
+
+      </div>
+
+      <div class="form-group">
+
+        <label class="form-label" for="bookAuthor">
+          Författare
+        </label>
+
+        <input
+          id="bookAuthor"
+          type="text"
+          placeholder="Valfritt"
+          autocomplete="off">
+
+      </div>
+
+      <button
+        class="primary"
+        id="addBookButton"
+        onclick="addBook()">
+        ➕ Lägg till bok
+      </button>
+
+      <div
+        id="addBookStatus"
+        class="status">
+      </div>
+
+    </div>`;
+}
+
+async function addBook(){
+
+  const titleInput =
+    document.getElementById("bookTitle");
+
+  const authorInput =
+    document.getElementById("bookAuthor");
+
+  const button =
+    document.getElementById("addBookButton");
+
+  const status =
+    document.getElementById("addBookStatus");
+
+  const title =
+    titleInput.value.trim();
+
+  const author =
+    authorInput.value.trim();
+
+  if(!title){
+
+    status.textContent =
+      "Skriv en titel först.";
+
+    titleInput.focus();
+
+    return;
+  }
+
+  button.disabled = true;
+
+  status.textContent =
+    "Lägger till boken…";
+
+  const { data, error } = await db
+    .from("books")
+    .insert({
+      title:title,
+      author:author || null
+    })
+    .select()
+    .single();
+
+  if(error){
+
+    button.disabled = false;
+
+    status.textContent = "";
+
+    showError(
+      "Kunde inte lägga till boken: " +
+      error.message
+    );
+
+    return;
+  }
+
+  await loadData();
+
+  status.innerHTML =
+    `<span style="color:#32633a">
+      ✓ <b>${esc(data.title)}</b> har lagts till!
+    </span>`;
+
+  titleInput.value = "";
+  authorInput.value = "";
+
+  button.disabled = false;
+
+  renderTabs();
+
+  setTimeout(() => {
+
+    tab = "rate";
+    render();
+
+  }, 1200);
 }
 
 function showError(msg){
-  document.getElementById("content").insertAdjacentHTML("afterbegin",
-    `<div class="error">${esc(msg)}</div>`);
+
+  document
+    .getElementById("content")
+    .insertAdjacentHTML(
+      "afterbegin",
+      `<div class="error">
+        ${esc(msg)}
+      </div>`
+    );
 }
 
 function render(){
+
   renderTabs();
+
   if(tab==="rate"){
+
     document.getElementById("content").innerHTML =
+
       `<div class="toolbar" id="members"></div>
-       <div class="legend">Välj medlem och klicka sedan på stjärnorna för att sätta betyg.</div>
+
+       <div class="legend">
+         Välj medlem och klicka sedan på
+         stjärnorna för att sätta betyg.
+       </div>
+
        <div class="grid" id="books"></div>`;
+
     renderMembers();
     renderBooks();
-  } else {
+
+  } else if(tab==="overview"){
+
     renderOverview();
+
+  } else if(tab==="add"){
+
+    renderAddBook();
+
   }
 }
 
 async function loadData(){
-  const [mRes,bRes,rRes] = await Promise.all([
-    db.from("members").select("id,name").order("id"),
-    db.from("books").select("id,title,author,created_at").order("id"),
-    db.from("ratings").select("id,book_id,member_id,rating")
-  ]);
+
+  const [mRes,bRes,rRes] =
+    await Promise.all([
+
+      db
+        .from("members")
+        .select("id,name")
+        .order("id"),
+
+      db
+        .from("books")
+        .select("id,title,author,created_at")
+        .order("id"),
+
+      db
+        .from("ratings")
+        .select("id,book_id,member_id,rating")
+
+    ]);
 
   if(mRes.error) throw mRes.error;
   if(bRes.error) throw bRes.error;
@@ -205,22 +568,52 @@ async function loadData(){
   books = bRes.data || [];
   ratings = rRes.data || [];
 
-  if(!members.some(m=>m.name===selected)) selected = members[0]?.name || "Gustav";
-  document.getElementById("subtitle").textContent =
-    `${books.length} böcker · ${members.length} medlemmar · betyg 1–5`;
+  if(
+    !members.some(
+      m => m.name === selected
+    )
+  ){
+
+    selected =
+      members[0]?.name ||
+      "Gustav";
+  }
+
+  document
+    .getElementById("subtitle")
+    .textContent =
+      `${books.length} böcker · ` +
+      `${members.length} medlemmar · ` +
+      `betyg 1–5`;
 }
 
 (async function init(){
+
   try{
+
     await loadData();
+
     render();
+
   }catch(e){
+
     document.getElementById("content").innerHTML =
-      `<div class="error"><b>Kunde inte ansluta till Bokklubbens databas.</b><br>${esc(e.message || e)}</div>`;
+
+      `<div class="error">
+
+        <b>
+          Kunde inte ansluta till Bokklubbens databas.
+        </b>
+
+        <br>
+
+        ${esc(e.message || e)}
+
+      </div>`;
   }
+
 })();
 </script>
-</body>
-</html>
+
 </body>
 </html>
