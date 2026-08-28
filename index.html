@@ -3,593 +3,484 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>Bokklubben</title>
 
 <style>
 
-  :root{
-    --bg:#f5f1ea;
-    --card:rgba(255,253,249,0.95);
-    --ink:#292621;
-    --muted:#746d64;
-    --line:#e5ddd2;
-    --accent:#8d5d3b;
-    --star:#d29a32;
-    --shadow:0 8px 28px rgba(42,35,27,.13);
-  }
+:root{
+  --bg:#f5f1ea;
+  --card:rgba(255,253,249,0.94);
+  --ink:#292621;
+  --muted:#7b746b;
+  --line:#e5ddd2;
+  --accent:#8d5d3b;
+  --star:#d29a32;
+  --shadow:0 8px 28px rgba(42,35,27,.13);
+}
 
-  *{
-    box-sizing:border-box;
-  }
+*{
+  box-sizing:border-box;
+}
 
-  html{
-    scroll-behavior:smooth;
-  }
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+
+  background:
+    linear-gradient(
+      rgba(245,241,234,.30),
+      rgba(245,241,234,.30)
+    ),
+    url("bokklubben-bg.png") center center / cover fixed;
+
+  color:var(--ink);
+
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+
+/* =========================
+   LAYOUT
+   ========================= */
+
+.wrap{
+  max-width:1050px;
+  margin:auto;
+  padding:42px 20px 80px;
+}
+
+header{
+  margin-bottom:26px;
+}
+
+h1{
+  font-family:Georgia,serif;
+  font-size:42px;
+  line-height:1;
+  margin:0 0 8px;
+  letter-spacing:-1px;
+}
+
+.sub{
+  color:var(--muted);
+  font-size:14px;
+}
+
+
+/* =========================
+   BUTTONS
+   ========================= */
+
+.toolbar{
+  display:flex;
+  gap:9px;
+  flex-wrap:wrap;
+  margin:20px 0;
+}
+
+button,
+.select,
+input{
+  border:1px solid var(--line);
+  background:rgba(255,253,249,.94);
+  border-radius:12px;
+  padding:10px 14px;
+  color:var(--ink);
+  font-size:15px;
+}
+
+button{
+  cursor:pointer;
+  transition:
+    transform .12s ease,
+    box-shadow .12s ease,
+    background .12s ease;
+}
+
+button:hover{
+  transform:translateY(-1px);
+  box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+button.active{
+  background:var(--ink);
+  color:white;
+  border-color:var(--ink);
+}
+
+
+/* =========================
+   BOOK GRID
+   ========================= */
+
+.grid{
+  display:grid;
+  grid-template-columns:
+    repeat(auto-fill,minmax(290px,1fr));
+  gap:15px;
+}
+
+.book{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:19px;
+
+  box-shadow:var(--shadow);
+
+  backdrop-filter:blur(3px);
+}
+
+.num{
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:7px;
+}
+
+.title{
+  font-family:Georgia,serif;
+  font-size:22px;
+  line-height:1.15;
+  margin-bottom:17px;
+}
+
+.rating{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  margin-bottom:12px;
+}
+
+.star{
+  font-size:29px;
+  line-height:1;
+  border:0;
+  background:none;
+  padding:0;
+  cursor:pointer;
+  color:#d8d0c5;
+  box-shadow:none;
+}
+
+.star:hover{
+  transform:none;
+  box-shadow:none;
+}
+
+.star.on{
+  color:var(--star);
+}
+
+.avg{
+  margin-left:auto;
+  font-weight:700;
+  font-size:14px;
+}
+
+.votes{
+  color:var(--muted);
+  font-weight:400;
+}
+
+.mine{
+  font-size:13px;
+  color:var(--muted);
+  margin-top:5px;
+}
+
+.mine b{
+  color:var(--ink);
+}
+
+.bar{
+  height:6px;
+  background:#eee8df;
+  border-radius:99px;
+  overflow:hidden;
+  margin-top:12px;
+}
+
+.fill{
+  height:100%;
+  background:var(--star);
+  border-radius:99px;
+}
+
+
+/* =========================
+   GENERAL
+   ========================= */
+
+.legend{
+  margin:24px 0 14px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.status{
+  font-size:13px;
+  color:var(--muted);
+  margin-top:12px;
+  min-height:20px;
+}
+
+.error{
+  background:#fff0ed;
+  border:1px solid #e6b8ad;
+  color:#8b3b2d;
+  padding:12px 14px;
+  border-radius:12px;
+  margin:15px 0;
+}
+
+.loading{
+  padding:25px 0;
+  color:var(--muted);
+}
+
+
+/* =========================
+   ADD BOOK
+   ========================= */
+
+.add-box{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:20px;
+  box-shadow:var(--shadow);
+  margin-bottom:20px;
+}
+
+.add-box h2{
+  font-family:Georgia,serif;
+  font-size:25px;
+  margin:0 0 15px;
+}
+
+.add-form{
+  display:flex;
+  gap:9px;
+  flex-wrap:wrap;
+}
+
+.add-form input{
+  flex:1 1 250px;
+  min-width:0;
+}
+
+.add-form button{
+  background:var(--ink);
+  color:white;
+  border-color:var(--ink);
+}
+
+.cancel-button{
+  background:transparent !important;
+  color:var(--ink) !important;
+  border-color:var(--line) !important;
+}
+
+
+/* =========================
+   OVERVIEW
+   ========================= */
+
+.overview-wrap{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(4px);
+}
+
+.overview-table{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed;
+}
+
+.overview-table th{
+  background:rgba(239,233,224,.82);
+  color:var(--muted);
+  font-size:13px;
+  font-weight:700;
+  text-align:center;
+  padding:13px 10px;
+  border-bottom:1px solid var(--line);
+}
+
+.overview-table th:first-child{
+  text-align:left;
+  width:46%;
+}
+
+.overview-table th:last-child{
+  width:11%;
+}
+
+.overview-table td{
+  padding:14px 10px;
+  border-bottom:1px solid var(--line);
+  text-align:center;
+  font-size:16px;
+}
+
+.overview-table tr:last-child td{
+  border-bottom:0;
+}
+
+.overview-table td:first-child{
+  text-align:left;
+  font-family:Georgia,serif;
+  font-size:17px;
+  line-height:1.2;
+}
+
+.overview-table .score{
+  font-weight:500;
+}
+
+.overview-table .average{
+  font-weight:800;
+  font-size:18px;
+}
+
+.overview-table .rank{
+  color:var(--muted);
+  font-family:Inter,sans-serif;
+  font-size:11px;
+  margin-right:7px;
+}
+
+.overview-table .missing{
+  color:#aaa39a;
+}
+
+.member-short{
+  display:none;
+}
+
+.overview-note{
+  margin:12px 2px 16px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media(max-width:700px){
 
   body{
-    margin:0;
-    min-height:100vh;
-
-    background:
-      linear-gradient(
-        rgba(245,241,234,.28),
-        rgba(245,241,234,.28)
-      ),
-      url("bokklubben-bg.png") center center / cover fixed;
-
-    color:var(--ink);
-
-    font-family:
-      Inter,
-      ui-sans-serif,
-      system-ui,
-      -apple-system,
-      BlinkMacSystemFont,
-      "Segoe UI",
-      sans-serif;
+    background-attachment:scroll;
   }
-
-  body::before{
-    content:"";
-    position:fixed;
-    inset:0;
-    background:rgba(250,246,238,.12);
-    pointer-events:none;
-    z-index:-1;
-  }
-
-
-  /* =========================
-     HUVUDLAYOUT
-     ========================= */
 
   .wrap{
-    max-width:1080px;
-    margin:auto;
-    padding:44px 22px 80px;
-  }
-
-  header{
-    margin-bottom:24px;
+    padding:
+      28px
+      12px
+      60px;
   }
 
   h1{
-    font-family:Georgia,serif;
-    font-size:44px;
-    line-height:1.05;
-    margin:0 0 8px;
-    letter-spacing:-.8px;
-    text-shadow:0 2px 10px rgba(255,255,255,.75);
+    font-size:34px;
   }
-
-  .sub{
-    color:var(--ink);
-    font-size:14px;
-    font-weight:500;
-    opacity:.78;
-  }
-
-
-  /* =========================
-     KNAPPAR
-     ========================= */
-
-  .toolbar{
-    display:flex;
-    gap:9px;
-    flex-wrap:wrap;
-    margin:20px 0;
-  }
-
-  button,
-  input{
-    border:1px solid rgba(229,221,210,.95);
-    background:rgba(255,253,249,.96);
-    border-radius:12px;
-    padding:10px 14px;
-    color:var(--ink);
-    font-size:15px;
-    font-family:inherit;
-  }
-
-  button{
-    cursor:pointer;
-
-    transition:
-      transform .12s ease,
-      box-shadow .12s ease,
-      background .12s ease;
-  }
-
-  button:hover:not(:disabled){
-    transform:translateY(-1px);
-    box-shadow:0 4px 12px rgba(42,35,27,.10);
-  }
-
-  button:active:not(:disabled){
-    transform:translateY(0);
-  }
-
-  button.active{
-    background:var(--ink);
-    color:white;
-    border-color:var(--ink);
-    box-shadow:0 4px 12px rgba(42,35,27,.16);
-  }
-
-  button.primary{
-    background:var(--ink);
-    color:white;
-    border-color:var(--ink);
-    font-weight:600;
-  }
-
-  button.primary:hover:not(:disabled){
-    background:#403a34;
-  }
-
-  button:disabled{
-    cursor:default;
-  }
-
-  input{
-    width:100%;
-    outline:none;
-
-    transition:
-      border-color .15s ease,
-      box-shadow .15s ease;
-  }
-
-  input:focus{
-    border-color:var(--accent);
-    box-shadow:0 0 0 3px rgba(141,93,59,.12);
-  }
-
-
-  /* =========================
-     BOKKORT - SÄTT BETYG
-     ========================= */
 
   .grid{
-    display:grid;
-    grid-template-columns:
-      repeat(auto-fill,minmax(290px,1fr));
-    gap:16px;
+    grid-template-columns:1fr;
   }
 
   .book{
-    background:var(--card);
-    border:1px solid rgba(229,221,210,.9);
-    border-radius:19px;
-    padding:20px;
-    box-shadow:var(--shadow);
-    backdrop-filter:blur(2px);
-
-    transition:
-      transform .16s ease,
-      box-shadow .16s ease;
+    padding:17px;
   }
 
-  .book:hover{
-    transform:translateY(-2px);
-    box-shadow:0 12px 32px rgba(42,35,27,.17);
+  .overview-wrap{
+    border-radius:15px;
   }
 
-  .num{
+  .overview-table th{
+    padding:11px 5px;
     font-size:12px;
-    color:var(--muted);
-    margin-bottom:7px;
-    letter-spacing:.4px;
   }
 
-  .title{
-    font-family:Georgia,serif;
-    font-size:22px;
-    line-height:1.15;
-    margin-bottom:17px;
-  }
-
-  .author{
-    font-size:13px;
-    color:var(--muted);
-    margin-top:-10px;
-    margin-bottom:15px;
-  }
-
-
-  /* =========================
-     BETYG
-     ========================= */
-
-  .rating{
-    display:flex;
-    align-items:center;
-    gap:3px;
-    margin-bottom:12px;
-  }
-
-  .star{
-    font-size:29px;
-    line-height:1;
-    border:0;
-    background:none;
-    padding:0 1px;
-    cursor:pointer;
-    color:#d8d0c5;
-    box-shadow:none;
-  }
-
-  .star:hover:not(:disabled){
-    color:var(--star);
-    box-shadow:none;
-    transform:scale(1.08);
-  }
-
-  .star.on{
-    color:var(--star);
-  }
-
-  .avg{
-    margin-left:auto;
-    font-weight:750;
-    font-size:14px;
-  }
-
-  .votes{
-    color:var(--muted);
-    font-weight:400;
-  }
-
-  .mine{
-    font-size:13px;
-    color:var(--muted);
-    margin-top:5px;
-  }
-
-  .mine b{
-    color:var(--ink);
-  }
-
-  .bar{
-    height:6px;
-    background:#eee8df;
-    border-radius:99px;
-    overflow:hidden;
-    margin-top:12px;
-  }
-
-  .fill{
-    height:100%;
-    background:var(--star);
-    border-radius:99px;
-    transition:width .25s ease;
-  }
-
-
-  /* =========================
-     TEXT / STATUS
-     ========================= */
-
-  .legend{
-    margin:24px 0 14px;
-    color:var(--muted);
-    font-size:13px;
-  }
-
-  .status{
-    font-size:13px;
-    color:var(--muted);
-    margin-top:12px;
-    min-height:20px;
-  }
-
-  .error{
-    background:#fff0ed;
-    border:1px solid #e6b8ad;
-    color:#8b3b2d;
-    padding:13px 15px;
-    border-radius:13px;
-    margin:15px 0;
-    box-shadow:0 4px 14px rgba(80,35,25,.08);
-  }
-
-  .loading{
-    padding:30px 0;
-    color:var(--muted);
-  }
-
-
-  /* =========================
-     LÄGG TILL BOK
-     ========================= */
-
-  .form-card{
-    max-width:600px;
-    background:var(--card);
-    border:1px solid rgba(229,221,210,.9);
-    border-radius:19px;
-    padding:25px;
-    box-shadow:var(--shadow);
-  }
-
-  .form-label{
-    display:block;
-    font-weight:650;
-    font-size:14px;
-    margin:0 0 7px;
-  }
-
-  .form-group{
-    margin-bottom:18px;
-  }
-
-
-  /* =========================
-     NY KOMPAKT ÖVERSIKT
-     ========================= */
-
-  .overview-table{
-    width:100%;
-
-    background:var(--card);
-
-    border:1px solid rgba(229,221,210,.9);
-    border-radius:18px;
-
-    overflow:hidden;
-
-    box-shadow:var(--shadow);
-
-    backdrop-filter:blur(2px);
-  }
-
-  .overview-header,
-  .overview-row{
-    display:grid;
-
-    /*
-      Bok + fyra personer + snitt
-    */
-    grid-template-columns:
-      minmax(260px,1fr)
-      repeat(4,70px)
-      70px;
-
-    align-items:center;
-  }
-
-  .overview-header{
-    padding:13px 18px;
-
-    background:rgba(244,238,230,.96);
-
-    color:var(--muted);
-
-    font-size:12px;
-    font-weight:700;
-
-    text-transform:none;
-  }
-
-  .overview-header > div:not(:first-child){
-    text-align:center;
-  }
-
-  .overview-header > div:last-child{
-    text-align:right;
-  }
-
-  .overview-row{
-    min-height:55px;
-
-    padding:10px 18px;
-
-    border-top:1px solid var(--line);
-
-    background:rgba(255,253,249,.72);
-
-    transition:background .12s ease;
-  }
-
-  .overview-row:hover{
-    background:rgba(255,253,249,.98);
-  }
-
-  .overview-book{
-    display:flex;
-    align-items:center;
-    gap:10px;
-
-    min-width:0;
-
-    font-family:Georgia,serif;
-    font-size:16px;
-  }
-
-  .overview-num{
-    color:var(--muted);
-
-    font-family:
-      Inter,
-      ui-sans-serif,
-      system-ui,
-      sans-serif;
-
-    font-size:11px;
-
-    min-width:28px;
-  }
-
-  .overview-book-title{
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-  }
-
-  .overview-rating{
-    text-align:center;
-
+  .overview-table td{
+    padding:13px 5px;
     font-size:15px;
-    font-weight:500;
   }
 
-  .overview-average{
-    text-align:right;
+  .overview-table th:first-child{
+    width:52%;
+  }
 
+  .overview-table th:last-child{
+    width:13%;
+  }
+
+  .overview-table td:first-child{
     font-size:16px;
-    font-weight:800;
   }
 
-
-  /* =========================
-     MOBIL
-     ========================= */
-
-  @media(max-width:700px){
-
-    .wrap{
-      padding:28px 12px 60px;
-    }
-
-    h1{
-      font-size:36px;
-    }
-
-    .grid{
-      grid-template-columns:1fr;
-      gap:13px;
-    }
-
-    .book{
-      padding:18px;
-    }
-
-    .toolbar{
-      gap:8px;
-    }
-
-    button{
-      padding:10px 13px;
-    }
-
-    /*
-      På mobil blir översikten riktigt kompakt.
-    */
-
-    .overview-table{
-      border-radius:14px;
-    }
-
-    .overview-header,
-    .overview-row{
-
-      grid-template-columns:
-        minmax(0,1fr)
-        repeat(4,38px)
-        48px;
-    }
-
-    .overview-header{
-      padding:10px 8px;
-
-      font-size:10px;
-    }
-
-    .overview-row{
-      padding:10px 8px;
-
-      min-height:48px;
-    }
-
-    .overview-book{
-      font-size:13px;
-      gap:5px;
-    }
-
-    .overview-num{
-      font-size:9px;
-      min-width:22px;
-    }
-
-    .overview-rating{
-      font-size:14px;
-    }
-
-    .overview-average{
-      font-size:14px;
-    }
+  .overview-table .average{
+    font-size:17px;
   }
 
-
-  @media(max-width:420px){
-
-    h1{
-      font-size:32px;
-    }
-
-    .sub{
-      font-size:13px;
-    }
-
-    .star{
-      font-size:27px;
-    }
-
-    .overview-header,
-    .overview-row{
-
-      grid-template-columns:
-        minmax(0,1fr)
-        repeat(4,34px)
-        44px;
-    }
-
-    .overview-header{
-      font-size:9px;
-    }
-
-    .overview-row{
-      padding-left:6px;
-      padding-right:6px;
-    }
-
-    .overview-book{
-      font-size:12px;
-    }
-
-    .overview-num{
-      display:none;
-    }
-
-    .overview-rating{
-      font-size:13px;
-    }
-
-    .overview-average{
-      font-size:13px;
-    }
+  .member-full{
+    display:none;
   }
+
+  .member-short{
+    display:inline;
+  }
+
+}
+
+
+/* =========================
+   VERY SMALL PHONES
+   ========================= */
+
+@media(max-width:430px){
+
+  .wrap{
+    padding-left:8px;
+    padding-right:8px;
+  }
+
+  .overview-table th{
+    padding-left:3px;
+    padding-right:3px;
+  }
+
+  .overview-table td{
+    padding-left:3px;
+    padding-right:3px;
+  }
+
+  .overview-table td:first-child{
+    font-size:15px;
+  }
+
+  .overview-table .rank{
+    margin-right:4px;
+  }
+
+}
 
 </style>
 </head>
@@ -599,36 +490,32 @@
 
 <div class="wrap">
 
-  <header>
-
-    <h1>📚 Bokklubben</h1>
-
-    <div class="sub" id="subtitle">
-      Laddar…
-    </div>
-
-  </header>
+<header>
+  <h1>📚 Bokklubben</h1>
+  <div class="sub" id="subtitle">Laddar…</div>
+</header>
 
 
-  <div class="toolbar" id="tabs"></div>
+<div class="toolbar" id="tabs"></div>
 
 
-  <div id="content">
-
-    <div class="loading">
-      Hämtar böcker och betyg…
-    </div>
-
+<div id="content">
+  <div class="loading">
+    Hämtar böcker och betyg…
   </div>
+</div>
+
 
 </div>
 
 
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
 <script>
+
+/* =========================
+   SUPABASE
+   ========================= */
 
 const SUPABASE_URL =
   "https://iunoonvcydjjhpnqryrp.supabase.co";
@@ -636,34 +523,36 @@ const SUPABASE_URL =
 const SUPABASE_PUBLISHABLE_KEY =
   "sb_publishable_gLvrE3BmoYF4X-GadC7Otw_rMN7bnMn";
 
-const db = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
+const db =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
 
+
+/* =========================
+   APP DATA
+   ========================= */
 
 let members = [];
 let books = [];
 let ratings = [];
 
-
 let selected =
-  localStorage.getItem("bokklubbSelectedMember") ||
-  "Gustav";
-
+  localStorage.getItem("bokklubbSelectedMember")
+  || "Gustav";
 
 let tab = "rate";
 
 
 /* =========================
-   SÄKER TEXT
+   HELPERS
    ========================= */
 
 function esc(s){
 
   return String(s ?? "").replace(
     /[&<>"']/g,
-
     c => ({
       "&":"&amp;",
       "<":"&lt;",
@@ -671,15 +560,10 @@ function esc(s){
       '"':"&quot;",
       "'":"&#39;"
     }[c])
-
   );
 
 }
 
-
-/* =========================
-   HÄMTA BETYG
-   ========================= */
 
 function getRating(bookId, memberId){
 
@@ -719,7 +603,7 @@ function avg(vals){
 
 
 /* =========================
-   NAVIGATION
+   TABS
    ========================= */
 
 function renderTabs(){
@@ -729,36 +613,26 @@ function renderTabs(){
     `<button
       class="${tab==='rate'?'active':''}"
       onclick="tab='rate';render()">
-
       ⭐ Sätt betyg
+    </button>
 
-    </button>`
-
-    +
-
-    `<button
+     <button
       class="${tab==='overview'?'active':''}"
       onclick="tab='overview';render()">
-
       📊 Översikt
+    </button>
 
-    </button>`
-
-    +
-
-    `<button
+     <button
       class="${tab==='add'?'active':''}"
       onclick="tab='add';render()">
-
       ➕ Lägg till bok
-
     </button>`;
 
 }
 
 
 /* =========================
-   MEDLEMMAR
+   MEMBERS
    ========================= */
 
 function renderMembers(){
@@ -772,23 +646,16 @@ function renderMembers(){
       style="
         width:100%;
         font-size:14px;
-        color:var(--muted);
-      ">
-
+        color:var(--muted)">
       Vem är du?
-
-    </strong>`
-
-    +
+    </strong>` +
 
     members.map(m =>
 
       `<button
         class="${m.name===selected?'active':''}"
         onclick="chooseMember('${esc(m.name)}')">
-
         👤 ${esc(m.name)}
-
       </button>`
 
     ).join("");
@@ -811,7 +678,7 @@ function chooseMember(name){
 
 
 /* =========================
-   SÄTT BETYG-VY
+   RATE VIEW
    ========================= */
 
 function renderBooks(){
@@ -848,79 +715,57 @@ function renderBooks(){
 
       return `
 
-      <article class="book">
+        <article class="book">
 
-        <div class="num">
-          #${String(i+1).padStart(2,"0")}
-        </div>
-
-
-        <div class="title">
-          ${esc(b.title)}
-        </div>
-
-
-        ${b.author ? `
-
-          <div class="author">
-            ${esc(b.author)}
+          <div class="num">
+            #${String(i+1).padStart(2,"0")}
           </div>
 
-        ` : ""}
+          <div class="title">
+            ${esc(b.title)}
+          </div>
 
+          <div class="rating">
 
-        <div class="rating">
+            ${[1,2,3,4,5].map(n =>
 
-          ${[1,2,3,4,5].map(n =>
+              `<button
+                class="star ${mine>=n?'on':''}"
+                aria-label="${n} av 5 stjärnor"
+                onclick="rate(${b.id},${n})">
+                ★
+              </button>`
 
-            `<button
-              class="star ${mine>=n?'on':''}"
-              aria-label="${n} av 5 stjärnor"
-              onclick="rate(${b.id},${n})">
+            ).join("")}
 
-              ★
-
-            </button>`
-
-          ).join("")}
-
-
-          <div class="avg">
-
-            ${a ? a.toFixed(1) : "—"}
-
-            <span class="votes">
-              (${valid.length})
-            </span>
+            <div class="avg">
+              ${a ? a.toFixed(1) : "—"}
+              <span class="votes">
+                (${valid.length})
+              </span>
+            </div>
 
           </div>
 
-        </div>
 
-
-        <div class="mine">
-
-          Ditt betyg:
-
-          <b>
-            ${mine
-              ? mine+" / 5"
-              : "inte satt"}
-          </b>
-
-        </div>
-
-
-        <div class="bar">
-
-          <div
-            class="fill"
-            style="width:${a*20}%">
+          <div class="mine">
+            Ditt betyg:
+            <b>
+              ${mine ? mine+" / 5" : "inte satt"}
+            </b>
           </div>
 
-        </div>
 
-      </article>`;
+          <div class="bar">
+            <div
+              class="fill"
+              style="width:${a*20}%">
+            </div>
+          </div>
+
+        </article>
+
+      `;
 
     }).join("");
 
@@ -928,7 +773,7 @@ function renderBooks(){
 
 
 /* =========================
-   SPARA BETYG
+   SAVE RATING
    ========================= */
 
 async function rate(bookId,value){
@@ -952,18 +797,15 @@ async function rate(bookId,value){
     await db
       .from("ratings")
       .upsert(
-
         {
           book_id:bookId,
           member_id:member.id,
           rating:value
         },
-
         {
           onConflict:
             "book_id,member_id"
         }
-
       );
 
 
@@ -977,11 +819,12 @@ async function rate(bookId,value){
   if(error){
 
     showError(
-      "Kunde inte spara betyget: " +
-      error.message
+      "Kunde inte spara betyget: "
+      + error.message
     );
 
     return;
+
   }
 
 
@@ -993,326 +836,243 @@ async function rate(bookId,value){
 
 
 /* =========================
-   ÖVERSIKT
+   OVERVIEW
    ========================= */
 
 function renderOverview(){
 
-  const rows =
+  const rows = books
 
-    books
-      .map(b => {
+    .map(b => {
 
-        const vals =
-          getBookRatings(b.id);
+      const vals =
+        getBookRatings(b.id);
 
-        return {
-          book:b,
-          vals:vals,
-          avg:avg(vals)
-        };
+      return {
+        book:b,
+        vals:vals,
+        avg:avg(vals)
+      };
 
-      })
+    })
 
-      .sort(
-        (a,b) => b.avg - a.avg
-      );
+    .sort(
+      (a,b) => b.avg-a.avg
+    );
 
 
-  document.getElementById("content").innerHTML =
+  document.getElementById("content").innerHTML = `
 
-    `<div class="legend">
-
+    <div class="legend">
       Alla medlemmars betyg.
       Böckerna sorteras efter snittbetyg.
-
     </div>
 
+    <div class="overview-wrap">
 
-    <div class="overview-table">
+      <table class="overview-table">
 
+        <thead>
 
-      <div class="overview-header">
+          <tr>
 
-        <div>
-          Bok
-        </div>
+            <th>Bok</th>
 
+            ${members.map(m => `
 
-        ${members.map(m =>
+              <th>
 
-          `<div>
-            ${esc(m.name)}
-          </div>`
+                <span class="member-full">
+                  ${esc(m.name)}
+                </span>
 
-        ).join("")}
+                <span class="member-short">
+                  ${esc(m.name.charAt(0))}
+                </span>
 
+              </th>
 
-        <div>
-          Snitt
-        </div>
+            `).join("")}
 
-      </div>
+            <th>Snitt</th>
 
+          </tr>
 
-      ${rows.map((r,i) => `
-
-
-        <div class="overview-row">
-
-
-          <div class="overview-book">
-
-            <span class="overview-num">
-              #${String(i+1).padStart(2,"0")}
-            </span>
+        </thead>
 
 
-            <span class="overview-book-title">
-              ${esc(r.book.title)}
-            </span>
+        <tbody>
 
-          </div>
+          ${rows.map((r,i) => `
+
+            <tr>
+
+              <td>
+
+                <span class="rank">
+                  ${i+1}
+                </span>
+
+                ${esc(r.book.title)}
+
+              </td>
 
 
-          ${r.vals.map(v => `
+              ${r.vals.map(v => `
 
-            <div class="overview-rating">
+                <td>
 
-              ${v != null ? v : "–"}
+                  ${
+                    v != null
+                    ? `<span class="score">${v}</span>`
+                    : `<span class="missing">–</span>`
+                  }
 
-            </div>
+                </td>
+
+              `).join("")}
+
+
+              <td class="average">
+
+                ${r.avg
+                  ? r.avg.toFixed(1)
+                  : "–"}
+
+              </td>
+
+            </tr>
 
           `).join("")}
 
+        </tbody>
 
-          <div class="overview-average">
+      </table>
 
-            ${r.avg
-              ? r.avg.toFixed(1)
-              : "–"}
+    </div>
 
-          </div>
-
-
-        </div>
-
-
-      `).join("")}
-
-
-    </div>`;
+  `;
 
 }
 
 
 /* =========================
-   LÄGG TILL BOK
+   ADD BOOK
    ========================= */
 
 function renderAddBook(){
 
-  document.getElementById("content").innerHTML =
+  document.getElementById("content").innerHTML = `
 
-    `<div class="legend">
+    <div class="add-box">
 
-      Lägg till en ny bok i bokklubben.
-      Den blir automatiskt tillgänglig
-      för alla medlemmar att betygsätta.
+      <h2>➕ Lägg till bok</h2>
+
+      <div class="add-form">
+
+        <input
+          id="newTitle"
+          type="text"
+          placeholder="Boktitel"
+          maxlength="200"
+        >
+
+        <input
+          id="newAuthor"
+          type="text"
+          placeholder="Författare (valfritt)"
+          maxlength="200"
+        >
+
+        <button
+          onclick="addBook()">
+          Lägg till
+        </button>
+
+      </div>
+
+      <div
+        id="addStatus"
+        class="status">
+      </div>
 
     </div>
 
-
-    <div class="form-card">
-
-
-      <div class="form-group">
-
-        <label
-          class="form-label"
-          for="bookTitle">
-
-          Titel *
-
-        </label>
-
-
-        <input
-          id="bookTitle"
-          type="text"
-          placeholder="T.ex. Hundra år av ensamhet"
-          autocomplete="off">
-
-      </div>
-
-
-
-      <div class="form-group">
-
-        <label
-          class="form-label"
-          for="bookAuthor">
-
-          Författare
-
-        </label>
-
-
-        <input
-          id="bookAuthor"
-          type="text"
-          placeholder="Valfritt"
-          autocomplete="off">
-
-      </div>
-
-
-
-      <button
-        class="primary"
-        id="addBookButton"
-        onclick="addBook()">
-
-        ➕ Lägg till bok
-
-      </button>
-
-
-      <div
-        id="addBookStatus"
-        class="status">
-
-      </div>
-
-
-    </div>`;
+  `;
 
 }
 
 
 /* =========================
-   LÄGG TILL BOK
+   INSERT NEW BOOK
    ========================= */
 
 async function addBook(){
 
-  const titleInput =
-    document.getElementById(
-      "bookTitle"
-    );
+  const titleEl =
+    document.getElementById("newTitle");
 
-
-  const authorInput =
-    document.getElementById(
-      "bookAuthor"
-    );
-
-
-  const button =
-    document.getElementById(
-      "addBookButton"
-    );
-
+  const authorEl =
+    document.getElementById("newAuthor");
 
   const status =
-    document.getElementById(
-      "addBookStatus"
-    );
+    document.getElementById("addStatus");
 
 
   const title =
-    titleInput.value.trim();
-
+    titleEl.value.trim();
 
   const author =
-    authorInput.value.trim();
+    authorEl.value.trim();
 
 
   if(!title){
 
     status.textContent =
-      "Skriv en titel först.";
+      "Skriv en boktitel först.";
 
-    titleInput.focus();
+    titleEl.focus();
 
     return;
+
   }
 
-
-  button.disabled = true;
 
   status.textContent =
     "Lägger till boken…";
 
 
-  const {data,error} =
-
+  const { error } =
     await db
       .from("books")
       .insert({
-
         title:title,
         author:author || null
-
-      })
-      .select()
-      .single();
+      });
 
 
   if(error){
 
-    button.disabled = false;
-
-    status.textContent = "";
-
-    showError(
-      "Kunde inte lägga till boken: " +
-      error.message
-    );
+    status.textContent =
+      "Kunde inte lägga till boken: "
+      + error.message;
 
     return;
+
   }
 
 
   await loadData();
 
+  tab = "rate";
 
-  status.innerHTML =
-
-    `<span style="color:#32633a">
-
-      ✓ <b>
-        ${esc(data.title)}
-      </b>
-
-      har lagts till!
-
-    </span>`;
-
-
-  titleInput.value = "";
-
-  authorInput.value = "";
-
-  button.disabled = false;
-
-
-  renderTabs();
-
-
-  setTimeout(()=>{
-
-    tab = "rate";
-
-    render();
-
-  },1200);
+  render();
 
 }
 
 
 /* =========================
-   FEL
+   ERROR
    ========================= */
 
 function showError(msg){
@@ -1320,22 +1080,17 @@ function showError(msg){
   document
     .getElementById("content")
     .insertAdjacentHTML(
-
       "afterbegin",
-
       `<div class="error">
-
         ${esc(msg)}
-
       </div>`
-
     );
 
 }
 
 
 /* =========================
-   RENDER
+   MAIN RENDER
    ========================= */
 
 function render(){
@@ -1343,50 +1098,41 @@ function render(){
   renderTabs();
 
 
-  if(tab==="rate"){
+  if(tab === "rate"){
 
-    document.getElementById(
-      "content"
-    ).innerHTML =
+    document.getElementById("content").innerHTML = `
 
-
-      `<div
+      <div
         class="toolbar"
         id="members">
-
       </div>
-
 
       <div class="legend">
-
         Välj medlem och klicka sedan
         på stjärnorna för att sätta betyg.
-
       </div>
-
 
       <div
         class="grid"
         id="books">
+      </div>
 
-      </div>`;
-
+    `;
 
     renderMembers();
-
     renderBooks();
 
   }
 
 
-  else if(tab==="overview"){
+  else if(tab === "overview"){
 
     renderOverview();
 
   }
 
 
-  else if(tab==="add"){
+  else if(tab === "add"){
 
     renderAddBook();
 
@@ -1396,7 +1142,7 @@ function render(){
 
 
 /* =========================
-   HÄMTA DATA
+   LOAD DATABASE
    ========================= */
 
 async function loadData(){
@@ -1405,15 +1151,12 @@ async function loadData(){
     mRes,
     bRes,
     rRes
-
   ] = await Promise.all([
-
 
     db
       .from("members")
       .select("id,name")
       .order("id"),
-
 
     db
       .from("books")
@@ -1421,7 +1164,6 @@ async function loadData(){
         "id,title,author,created_at"
       )
       .order("id"),
-
 
     db
       .from("ratings")
@@ -1435,10 +1177,8 @@ async function loadData(){
   if(mRes.error)
     throw mRes.error;
 
-
   if(bRes.error)
     throw bRes.error;
-
 
   if(rRes.error)
     throw rRes.error;
@@ -1447,10 +1187,8 @@ async function loadData(){
   members =
     mRes.data || [];
 
-
   books =
     bRes.data || [];
-
 
   ratings =
     rRes.data || [];
@@ -1463,8 +1201,8 @@ async function loadData(){
   ){
 
     selected =
-      members[0]?.name ||
-      "Gustav";
+      members[0]?.name
+      || "Gustav";
 
   }
 
@@ -1472,10 +1210,9 @@ async function loadData(){
   document
     .getElementById("subtitle")
     .textContent =
-
-      `${books.length} böcker · ` +
-      `${members.length} medlemmar · ` +
-      `betyg 1–5`;
+      `${books.length} böcker · `
+      + `${members.length} medlemmar · `
+      + `betyg 1–5`;
 
 }
 
@@ -1498,22 +1235,22 @@ async function loadData(){
 
     document
       .getElementById("content")
-      .innerHTML =
+      .innerHTML = `
 
-      `<div class="error">
+        <div class="error">
 
-        <b>
-          Kunde inte ansluta
-          till Bokklubbens databas.
-        </b>
+          <b>
+            Kunde inte ansluta
+            till Bokklubbens databas.
+          </b>
 
-        <br>
+          <br>
 
-        ${esc(
-          e.message || e
-        )}
+          ${esc(e.message || e)}
 
-      </div>`;
+        </div>
+
+      `;
 
   }
 
