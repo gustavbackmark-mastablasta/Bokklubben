@@ -6,10 +6,10 @@
 <title>Bokklubben</title>
 
 <style>
+
   :root{
     --bg:#f5f1ea;
     --card:rgba(255,253,249,0.95);
-    --card-solid:#fffdf9;
     --ink:#292621;
     --muted:#746d64;
     --line:#e5ddd2;
@@ -29,13 +29,16 @@
   body{
     margin:0;
     min-height:100vh;
+
     background:
       linear-gradient(
         rgba(245,241,234,.28),
         rgba(245,241,234,.28)
       ),
       url("bokklubben-bg.png") center center / cover fixed;
+
     color:var(--ink);
+
     font-family:
       Inter,
       ui-sans-serif,
@@ -46,7 +49,6 @@
       sans-serif;
   }
 
-  /* Ett mjukt lager som gör text och kort lättare att läsa */
   body::before{
     content:"";
     position:fixed;
@@ -55,6 +57,11 @@
     pointer-events:none;
     z-index:-1;
   }
+
+
+  /* =========================
+     HUVUDLAYOUT
+     ========================= */
 
   .wrap{
     max-width:1080px;
@@ -82,9 +89,10 @@
     opacity:.78;
   }
 
-  /* --------------------------------------------------
+
+  /* =========================
      KNAPPAR
-     -------------------------------------------------- */
+     ========================= */
 
   .toolbar{
     display:flex;
@@ -94,7 +102,6 @@
   }
 
   button,
-  .select,
   input{
     border:1px solid rgba(229,221,210,.95);
     background:rgba(255,253,249,.96);
@@ -107,11 +114,11 @@
 
   button{
     cursor:pointer;
+
     transition:
       transform .12s ease,
       box-shadow .12s ease,
-      background .12s ease,
-      border-color .12s ease;
+      background .12s ease;
   }
 
   button:hover:not(:disabled){
@@ -147,8 +154,8 @@
 
   input{
     width:100%;
-    font-family:inherit;
     outline:none;
+
     transition:
       border-color .15s ease,
       box-shadow .15s ease;
@@ -159,9 +166,10 @@
     box-shadow:0 0 0 3px rgba(141,93,59,.12);
   }
 
-  /* --------------------------------------------------
-     BÖCKER
-     -------------------------------------------------- */
+
+  /* =========================
+     BOKKORT - SÄTT BETYG
+     ========================= */
 
   .grid{
     display:grid;
@@ -177,6 +185,7 @@
     padding:20px;
     box-shadow:var(--shadow);
     backdrop-filter:blur(2px);
+
     transition:
       transform .16s ease,
       box-shadow .16s ease;
@@ -208,9 +217,10 @@
     margin-bottom:15px;
   }
 
-  /* --------------------------------------------------
+
+  /* =========================
      BETYG
-     -------------------------------------------------- */
+     ========================= */
 
   .rating{
     display:flex;
@@ -276,9 +286,10 @@
     transition:width .25s ease;
   }
 
-  /* --------------------------------------------------
+
+  /* =========================
      TEXT / STATUS
-     -------------------------------------------------- */
+     ========================= */
 
   .legend{
     margin:24px 0 14px;
@@ -303,23 +314,15 @@
     box-shadow:0 4px 14px rgba(80,35,25,.08);
   }
 
-  .success{
-    background:#edf8ef;
-    border:1px solid #b8d9bd;
-    color:#32633a;
-    padding:13px 15px;
-    border-radius:13px;
-    margin:15px 0;
-  }
-
   .loading{
     padding:30px 0;
     color:var(--muted);
   }
 
-  /* --------------------------------------------------
+
+  /* =========================
      LÄGG TILL BOK
-     -------------------------------------------------- */
+     ========================= */
 
   .form-card{
     max-width:600px;
@@ -341,37 +344,132 @@
     margin-bottom:18px;
   }
 
-  /* --------------------------------------------------
-     ÖVERSIKT
-     -------------------------------------------------- */
 
-  .overview-member{
-    display:flex;
-    justify-content:space-between;
-    padding:8px 0;
+  /* =========================
+     NY KOMPAKT ÖVERSIKT
+     ========================= */
+
+  .overview-table{
+    width:100%;
+
+    background:var(--card);
+
+    border:1px solid rgba(229,221,210,.9);
+    border-radius:18px;
+
+    overflow:hidden;
+
+    box-shadow:var(--shadow);
+
+    backdrop-filter:blur(2px);
+  }
+
+  .overview-header,
+  .overview-row{
+    display:grid;
+
+    /*
+      Bok + fyra personer + snitt
+    */
+    grid-template-columns:
+      minmax(260px,1fr)
+      repeat(4,70px)
+      70px;
+
+    align-items:center;
+  }
+
+  .overview-header{
+    padding:13px 18px;
+
+    background:rgba(244,238,230,.96);
+
+    color:var(--muted);
+
+    font-size:12px;
+    font-weight:700;
+
+    text-transform:none;
+  }
+
+  .overview-header > div:not(:first-child){
+    text-align:center;
+  }
+
+  .overview-header > div:last-child{
+    text-align:right;
+  }
+
+  .overview-row{
+    min-height:55px;
+
+    padding:10px 18px;
+
     border-top:1px solid var(--line);
-    font-size:14px;
+
+    background:rgba(255,253,249,.72);
+
+    transition:background .12s ease;
   }
 
-  .overview-score{
-    font-size:32px;
+  .overview-row:hover{
+    background:rgba(255,253,249,.98);
+  }
+
+  .overview-book{
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    min-width:0;
+
+    font-family:Georgia,serif;
+    font-size:16px;
+  }
+
+  .overview-num{
+    color:var(--muted);
+
+    font-family:
+      Inter,
+      ui-sans-serif,
+      system-ui,
+      sans-serif;
+
+    font-size:11px;
+
+    min-width:28px;
+  }
+
+  .overview-book-title{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
+  .overview-rating{
+    text-align:center;
+
+    font-size:15px;
+    font-weight:500;
+  }
+
+  .overview-average{
+    text-align:right;
+
+    font-size:16px;
     font-weight:800;
-    margin:2px 0 4px;
   }
 
-  .overview-stars{
-    font-size:22px;
-    color:var(--star);
-  }
 
-  /* --------------------------------------------------
+  /* =========================
      MOBIL
-     -------------------------------------------------- */
+     ========================= */
 
   @media(max-width:700px){
 
     .wrap{
-      padding:28px 15px 60px;
+      padding:28px 12px 60px;
     }
 
     h1{
@@ -394,7 +492,55 @@
     button{
       padding:10px 13px;
     }
+
+    /*
+      På mobil blir översikten riktigt kompakt.
+    */
+
+    .overview-table{
+      border-radius:14px;
+    }
+
+    .overview-header,
+    .overview-row{
+
+      grid-template-columns:
+        minmax(0,1fr)
+        repeat(4,38px)
+        48px;
+    }
+
+    .overview-header{
+      padding:10px 8px;
+
+      font-size:10px;
+    }
+
+    .overview-row{
+      padding:10px 8px;
+
+      min-height:48px;
+    }
+
+    .overview-book{
+      font-size:13px;
+      gap:5px;
+    }
+
+    .overview-num{
+      font-size:9px;
+      min-width:22px;
+    }
+
+    .overview-rating{
+      font-size:14px;
+    }
+
+    .overview-average{
+      font-size:14px;
+    }
   }
+
 
   @media(max-width:420px){
 
@@ -409,31 +555,78 @@
     .star{
       font-size:27px;
     }
+
+    .overview-header,
+    .overview-row{
+
+      grid-template-columns:
+        minmax(0,1fr)
+        repeat(4,34px)
+        44px;
+    }
+
+    .overview-header{
+      font-size:9px;
+    }
+
+    .overview-row{
+      padding-left:6px;
+      padding-right:6px;
+    }
+
+    .overview-book{
+      font-size:12px;
+    }
+
+    .overview-num{
+      display:none;
+    }
+
+    .overview-rating{
+      font-size:13px;
+    }
+
+    .overview-average{
+      font-size:13px;
+    }
   }
+
 </style>
 </head>
+
 
 <body>
 
 <div class="wrap">
 
   <header>
+
     <h1>📚 Bokklubben</h1>
-    <div class="sub" id="subtitle">Laddar…</div>
+
+    <div class="sub" id="subtitle">
+      Laddar…
+    </div>
+
   </header>
+
 
   <div class="toolbar" id="tabs"></div>
 
+
   <div id="content">
+
     <div class="loading">
       Hämtar böcker och betyg…
     </div>
+
   </div>
 
 </div>
 
 
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 
 <script>
 
@@ -453,17 +646,24 @@ let members = [];
 let books = [];
 let ratings = [];
 
+
 let selected =
   localStorage.getItem("bokklubbSelectedMember") ||
   "Gustav";
 
+
 let tab = "rate";
 
+
+/* =========================
+   SÄKER TEXT
+   ========================= */
 
 function esc(s){
 
   return String(s ?? "").replace(
     /[&<>"']/g,
+
     c => ({
       "&":"&amp;",
       "<":"&lt;",
@@ -471,18 +671,24 @@ function esc(s){
       '"':"&quot;",
       "'":"&#39;"
     }[c])
+
   );
 
 }
 
 
+/* =========================
+   HÄMTA BETYG
+   ========================= */
+
 function getRating(bookId, memberId){
 
-  const r = ratings.find(
-    x =>
-      x.book_id === bookId &&
-      x.member_id === memberId
-  );
+  const r =
+    ratings.find(
+      x =>
+        x.book_id === bookId &&
+        x.member_id === memberId
+    );
 
   return r ? r.rating : null;
 
@@ -492,7 +698,7 @@ function getRating(bookId, memberId){
 function getBookRatings(bookId){
 
   return members.map(
-    m => getRating(bookId, m.id)
+    m => getRating(bookId,m.id)
   );
 
 }
@@ -501,7 +707,9 @@ function getBookRatings(bookId){
 function avg(vals){
 
   const v =
-    vals.filter(x => x != null);
+    vals.filter(
+      x => x != null
+    );
 
   return v.length
     ? v.reduce((a,b)=>a+b,0) / v.length
@@ -510,9 +718,9 @@ function avg(vals){
 }
 
 
-/* --------------------------------------------------
+/* =========================
    NAVIGATION
-   -------------------------------------------------- */
+   ========================= */
 
 function renderTabs(){
 
@@ -521,7 +729,9 @@ function renderTabs(){
     `<button
       class="${tab==='rate'?'active':''}"
       onclick="tab='rate';render()">
+
       ⭐ Sätt betyg
+
     </button>`
 
     +
@@ -529,7 +739,9 @@ function renderTabs(){
     `<button
       class="${tab==='overview'?'active':''}"
       onclick="tab='overview';render()">
+
       📊 Översikt
+
     </button>`
 
     +
@@ -537,15 +749,17 @@ function renderTabs(){
     `<button
       class="${tab==='add'?'active':''}"
       onclick="tab='add';render()">
+
       ➕ Lägg till bok
+
     </button>`;
 
 }
 
 
-/* --------------------------------------------------
+/* =========================
    MEDLEMMAR
-   -------------------------------------------------- */
+   ========================= */
 
 function renderMembers(){
 
@@ -560,7 +774,9 @@ function renderMembers(){
         font-size:14px;
         color:var(--muted);
       ">
+
       Vem är du?
+
     </strong>`
 
     +
@@ -570,7 +786,9 @@ function renderMembers(){
       `<button
         class="${m.name===selected?'active':''}"
         onclick="chooseMember('${esc(m.name)}')">
+
         👤 ${esc(m.name)}
+
       </button>`
 
     ).join("");
@@ -592,9 +810,9 @@ function chooseMember(name){
 }
 
 
-/* --------------------------------------------------
-   BOKKORT
-   -------------------------------------------------- */
+/* =========================
+   SÄTT BETYG-VY
+   ========================= */
 
 function renderBooks(){
 
@@ -604,6 +822,7 @@ function renderBooks(){
     ) || members[0];
 
   if(!member) return;
+
 
   document.getElementById("books").innerHTML =
 
@@ -618,12 +837,14 @@ function renderBooks(){
           member.id
         );
 
-      const a = avg(vals);
+      const a =
+        avg(vals);
 
       const valid =
         vals.filter(
           x => x != null
         );
+
 
       return `
 
@@ -633,15 +854,20 @@ function renderBooks(){
           #${String(i+1).padStart(2,"0")}
         </div>
 
+
         <div class="title">
           ${esc(b.title)}
         </div>
 
+
         ${b.author ? `
+
           <div class="author">
             ${esc(b.author)}
           </div>
+
         ` : ""}
+
 
         <div class="rating">
 
@@ -651,33 +877,47 @@ function renderBooks(){
               class="star ${mine>=n?'on':''}"
               aria-label="${n} av 5 stjärnor"
               onclick="rate(${b.id},${n})">
+
               ★
+
             </button>`
 
           ).join("")}
 
+
           <div class="avg">
+
             ${a ? a.toFixed(1) : "—"}
 
             <span class="votes">
               (${valid.length})
             </span>
+
           </div>
 
         </div>
 
+
         <div class="mine">
+
           Ditt betyg:
+
           <b>
-            ${mine ? mine+" / 5" : "inte satt"}
+            ${mine
+              ? mine+" / 5"
+              : "inte satt"}
           </b>
+
         </div>
 
+
         <div class="bar">
+
           <div
             class="fill"
             style="width:${a*20}%">
           </div>
+
         </div>
 
       </article>`;
@@ -687,9 +927,9 @@ function renderBooks(){
 }
 
 
-/* --------------------------------------------------
-   SÄTT BETYG
-   -------------------------------------------------- */
+/* =========================
+   SPARA BETYG
+   ========================= */
 
 async function rate(bookId,value){
 
@@ -699,6 +939,7 @@ async function rate(bookId,value){
     );
 
   if(!member) return;
+
 
   document
     .querySelectorAll(".star")
@@ -711,15 +952,18 @@ async function rate(bookId,value){
     await db
       .from("ratings")
       .upsert(
+
         {
           book_id:bookId,
           member_id:member.id,
           rating:value
         },
+
         {
           onConflict:
             "book_id,member_id"
         }
+
       );
 
 
@@ -748,147 +992,150 @@ async function rate(bookId,value){
 }
 
 
-/* --------------------------------------------------
+/* =========================
    ÖVERSIKT
-   -------------------------------------------------- */
+   ========================= */
 
 function renderOverview(){
 
   const rows =
 
     books
-      .map(b=>{
+      .map(b => {
 
         const vals =
           getBookRatings(b.id);
 
         return {
           book:b,
-          vals,
+          vals:vals,
           avg:avg(vals)
         };
 
       })
+
       .sort(
-        (a,b)=>b.avg-a.avg
+        (a,b) => b.avg - a.avg
       );
 
 
   document.getElementById("content").innerHTML =
 
     `<div class="legend">
-      Alla medlemmars betyg på samma ställe.
+
+      Alla medlemmars betyg.
       Böckerna sorteras efter snittbetyg.
+
     </div>
 
-    <div class="grid">
 
-      ${rows.map((r,i)=>`
+    <div class="overview-table">
 
-        <article class="book">
 
-          <div class="num">
-            #${i+1}
-          </div>
+      <div class="overview-header">
 
-          <div class="title">
-            ${esc(r.book.title)}
-          </div>
+        <div>
+          Bok
+        </div>
 
-          ${r.book.author ? `
-            <div class="author">
-              ${esc(r.book.author)}
-            </div>
-          ` : ""}
 
-          <div class="overview-score">
-            ${r.avg
-              ? r.avg.toFixed(1)
-              : "—"}
-          </div>
+        ${members.map(m =>
 
-          <div
-            class="rating"
-            style="margin-bottom:14px">
+          `<div>
+            ${esc(m.name)}
+          </div>`
 
-            <span class="overview-stars">
-              ${r.avg
-                ? "★".repeat(
-                    Math.round(r.avg)
-                  )
-                : "☆☆☆☆☆"}
+        ).join("")}
+
+
+        <div>
+          Snitt
+        </div>
+
+      </div>
+
+
+      ${rows.map((r,i) => `
+
+
+        <div class="overview-row">
+
+
+          <div class="overview-book">
+
+            <span class="overview-num">
+              #${String(i+1).padStart(2,"0")}
             </span>
 
-            <span class="votes">
-              ${r.vals.filter(
-                x=>x!=null
-              ).length}
-              röster
+
+            <span class="overview-book-title">
+              ${esc(r.book.title)}
             </span>
 
           </div>
 
-          ${members.map((m,j)=>`
 
-            <div class="overview-member">
+          ${r.vals.map(v => `
 
-              <span>
-                ${esc(m.name)}
-              </span>
+            <div class="overview-rating">
 
-              <span
-                style="color:var(--star)">
-
-                ${r.vals[j]
-                  ? (
-                    "★".repeat(
-                      r.vals[j]
-                    )
-                    +
-                    "☆".repeat(
-                      5-r.vals[j]
-                    )
-                  )
-                  : "—"}
-
-              </span>
+              ${v != null ? v : "–"}
 
             </div>
 
           `).join("")}
 
-        </article>
+
+          <div class="overview-average">
+
+            ${r.avg
+              ? r.avg.toFixed(1)
+              : "–"}
+
+          </div>
+
+
+        </div>
+
 
       `).join("")}
+
 
     </div>`;
 
 }
 
 
-/* --------------------------------------------------
+/* =========================
    LÄGG TILL BOK
-   -------------------------------------------------- */
+   ========================= */
 
 function renderAddBook(){
 
   document.getElementById("content").innerHTML =
 
     `<div class="legend">
+
       Lägg till en ny bok i bokklubben.
       Den blir automatiskt tillgänglig
       för alla medlemmar att betygsätta.
+
     </div>
 
+
     <div class="form-card">
+
 
       <div class="form-group">
 
         <label
           class="form-label"
           for="bookTitle">
+
           Titel *
+
         </label>
+
 
         <input
           id="bookTitle"
@@ -899,13 +1146,17 @@ function renderAddBook(){
       </div>
 
 
+
       <div class="form-group">
 
         <label
           class="form-label"
           for="bookAuthor">
+
           Författare
+
         </label>
+
 
         <input
           id="bookAuthor"
@@ -914,6 +1165,7 @@ function renderAddBook(){
           autocomplete="off">
 
       </div>
+
 
 
       <button
@@ -929,12 +1181,18 @@ function renderAddBook(){
       <div
         id="addBookStatus"
         class="status">
+
       </div>
+
 
     </div>`;
 
 }
 
+
+/* =========================
+   LÄGG TILL BOK
+   ========================= */
 
 async function addBook(){
 
@@ -943,15 +1201,18 @@ async function addBook(){
       "bookTitle"
     );
 
+
   const authorInput =
     document.getElementById(
       "bookAuthor"
     );
 
+
   const button =
     document.getElementById(
       "addBookButton"
     );
+
 
   const status =
     document.getElementById(
@@ -961,6 +1222,7 @@ async function addBook(){
 
   const title =
     titleInput.value.trim();
+
 
   const author =
     authorInput.value.trim();
@@ -984,11 +1246,14 @@ async function addBook(){
 
 
   const {data,error} =
+
     await db
       .from("books")
       .insert({
+
         title:title,
         author:author || null
+
       })
       .select()
       .single();
@@ -1019,15 +1284,18 @@ async function addBook(){
       ✓ <b>
         ${esc(data.title)}
       </b>
+
       har lagts till!
 
     </span>`;
 
 
   titleInput.value = "";
+
   authorInput.value = "";
 
   button.disabled = false;
+
 
   renderTabs();
 
@@ -1043,9 +1311,9 @@ async function addBook(){
 }
 
 
-/* --------------------------------------------------
+/* =========================
    FEL
-   -------------------------------------------------- */
+   ========================= */
 
 function showError(msg){
 
@@ -1056,7 +1324,9 @@ function showError(msg){
       "afterbegin",
 
       `<div class="error">
+
         ${esc(msg)}
+
       </div>`
 
     );
@@ -1064,9 +1334,9 @@ function showError(msg){
 }
 
 
-/* --------------------------------------------------
+/* =========================
    RENDER
-   -------------------------------------------------- */
+   ========================= */
 
 function render(){
 
@@ -1079,19 +1349,26 @@ function render(){
       "content"
     ).innerHTML =
 
+
       `<div
         class="toolbar"
         id="members">
+
       </div>
 
+
       <div class="legend">
+
         Välj medlem och klicka sedan
         på stjärnorna för att sätta betyg.
+
       </div>
+
 
       <div
         class="grid"
         id="books">
+
       </div>`;
 
 
@@ -1118,9 +1395,9 @@ function render(){
 }
 
 
-/* --------------------------------------------------
-   HÄMTA DATA FRÅN SUPABASE
-   -------------------------------------------------- */
+/* =========================
+   HÄMTA DATA
+   ========================= */
 
 async function loadData(){
 
@@ -1128,12 +1405,15 @@ async function loadData(){
     mRes,
     bRes,
     rRes
+
   ] = await Promise.all([
+
 
     db
       .from("members")
       .select("id,name")
       .order("id"),
+
 
     db
       .from("books")
@@ -1141,6 +1421,7 @@ async function loadData(){
         "id,title,author,created_at"
       )
       .order("id"),
+
 
     db
       .from("ratings")
@@ -1154,8 +1435,10 @@ async function loadData(){
   if(mRes.error)
     throw mRes.error;
 
+
   if(bRes.error)
     throw bRes.error;
+
 
   if(rRes.error)
     throw rRes.error;
@@ -1164,8 +1447,10 @@ async function loadData(){
   members =
     mRes.data || [];
 
+
   books =
     bRes.data || [];
+
 
   ratings =
     rRes.data || [];
@@ -1195,9 +1480,9 @@ async function loadData(){
 }
 
 
-/* --------------------------------------------------
+/* =========================
    START
-   -------------------------------------------------- */
+   ========================= */
 
 (async function init(){
 
