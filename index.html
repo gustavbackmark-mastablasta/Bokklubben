@@ -537,12 +537,11 @@ const db =
 let members = [];
 let books = [];
 let ratings = [];
-
-let selected =
-  localStorage.getItem("bokklubbSelectedMember")
-  || "Gustav";
-
+let selected = localStorage.getItem("bokklubbSelectedMember") || "Gustav";
 let tab = "rate";
+
+let overviewSort = "avg";
+let overviewDirection = "desc";
 
 
 /* =========================
@@ -838,123 +837,125 @@ async function rate(bookId,value){
 /* =========================
    OVERVIEW
    ========================= */
+function sortOverviewBy(key){
+  if(overviewSort === key){
+    overviewDirection = overviewDirection === "desc" ? "asc" : "desc";
+  } else {
+    overviewSort = key;
+    overviewDirection = "desc";
+  }
 
 function renderOverview(){
+const rows = books.map(b => {
+    const vals = getBookRatings(b.id);
 
-  const rows = books
+    return {
+      book: b,
+      vals: vals,
+      avg: avg(vals)
+    };
+  });
 
-    .map(b => {
+  rows.sort((a,b) => {
 
-      const vals =
-        getBookRatings(b.id);
+    let aValue;
+    let bValue;
 
-      return {
-        book:b,
-        vals:vals,
-        avg:avg(vals)
-      };
+    if(overviewSort === "avg"){
+      aValue = a.avg;
+      bValue = b.avg;
+    } else {
+      const memberIndex = members.findIndex(
+        m => String(m.id) === String(overviewSort)
+      );
 
-    })
+      aValue = memberIndex >= 0
+        ? (a.vals[memberIndex] ?? -1)
+        : -1;
 
-    .sort(
-      (a,b) => b.avg-a.avg
-    );
+      bValue = memberIndex >= 0
+        ? (b.vals[memberIndex] ?? -1)
+        : -1;
+    }
 
+    return overviewDirection === "desc"
+      ? bValue - aValue
+      : aValue - bValue;
+  });
+
+  function arrow(key){
+    if(overviewSort !== key) return "";
+    return overviewDirection === "desc" ? " ↓" : " ↑";
+  }
 
   document.getElementById("content").innerHTML = `
 
     <div class="legend">
-      Alla medlemmars betyg.
-      Böckerna sorteras efter snittbetyg.
+      Alla medlemmars betyg. Klicka på ett namn för att sortera.
     </div>
 
-    <div class="overview-wrap">
+    <div class="overview-table">
 
-      <table class="overview-table">
+      <div class="overview-row overview-header">
 
-        <thead>
+        <div class="rank">#</div>
 
-          <tr>
+        <div class="book-name">
+          Bok
+        </div>
 
-            <th>Bok</th>
+        ${members.map(m => `
+          <button
+            class="person-header ${String(overviewSort) === String(m.id) ? "selected-sort" : ""}"
+            onclick="sortOverviewBy('${m.id}')"
+            title="Sortera efter ${esc(m.name)}"
+          >
+            ${esc(m.name)}${arrow(String(m.id))}
+          </button>
+        `).join("")}
 
-            ${members.map(m => `
+        <button
+          class="average-header ${overviewSort === "avg" ? "selected-sort" : ""}"
+          onclick="sortOverviewBy('avg')"
+          title="Sortera efter snitt"
+        >
+          Snitt${arrow("avg")}
+        </button>
 
-              <th>
+      </div>
 
-                <span class="member-full">
-                  ${esc(m.name)}
-                </span>
+      ${rows.map((r,i) => `
 
-                <span class="member-short">
-                  ${esc(m.name.charAt(0))}
-                </span>
+        <div class="overview-row">
 
-              </th>
+          <div class="rank">
+            ${i + 1}
+          </div>
 
-            `).join("")}
+          <div
+            class="book-name"
+            title="${esc(r.book.title)}"
+          >
+            ${esc(r.book.title)}
+          </div>
 
-            <th>Snitt</th>
-
-          </tr>
-
-        </thead>
-
-
-        <tbody>
-
-          ${rows.map((r,i) => `
-
-            <tr>
-
-              <td>
-
-                <span class="rank">
-                  ${i+1}
-                </span>
-
-                ${esc(r.book.title)}
-
-              </td>
-
-
-              ${r.vals.map(v => `
-
-                <td>
-
-                  ${
-                    v != null
-                    ? `<span class="score">${v}</span>`
-                    : `<span class="missing">–</span>`
-                  }
-
-                </td>
-
-              `).join("")}
-
-
-              <td class="average">
-
-                ${r.avg
-                  ? r.avg.toFixed(1)
-                  : "–"}
-
-              </td>
-
-            </tr>
-
+          ${r.vals.map(v => `
+            <div class="score">
+              ${v != null ? v : "–"}
+            </div>
           `).join("")}
 
-        </tbody>
+          <div class="average">
+            ${r.avg ? r.avg.toFixed(1) : "–"}
+          </div>
 
-      </table>
+        </div>
+
+      `).join("")}
 
     </div>
-
   `;
-
 }
-
 
 /* =========================
    ADD BOOK
