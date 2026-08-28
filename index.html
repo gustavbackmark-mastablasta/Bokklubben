@@ -783,7 +783,24 @@ function renderBooks(){
 
   document.getElementById("books").innerHTML =
 
-    books.map((b,i)=>{
+    [...books].sort((a,b)=>{
+
+  const ratingA = getRating(a.id, member.id);
+  const ratingB = getRating(b.id, member.id);
+
+  // Böcker utan betyg hamnar längst ner
+  if(ratingA == null && ratingB != null) return 1;
+  if(ratingB == null && ratingA != null) return -1;
+
+  // Högsta betyg först
+  if(ratingA != null && ratingB != null){
+    return ratingB - ratingA;
+  }
+
+  // Behåll bokordningen om båda saknar betyg
+  return a.id - b.id;
+
+}).map((b,i)=>{
 
       const vals =
         getBookRatings(b.id);
