@@ -7,6 +7,7 @@
 <title>Bokklubben</title>
 
 <style>
+
 :root{
   --bg:#f5f1ea;
   --card:rgba(255,253,249,.94);
@@ -55,6 +56,7 @@ body{
   padding:44px 22px 80px;
 }
 
+
 /* =========================
    RUBRIK
    ========================= */
@@ -78,6 +80,7 @@ h1{
   font-weight:500;
   opacity:.78;
 }
+
 
 /* =========================
    KNAPPAR
@@ -133,6 +136,7 @@ button:disabled{
   cursor:default;
 }
 
+
 /* =========================
    BOKKORT
    ========================= */
@@ -165,12 +169,14 @@ button:disabled{
   font-size:22px;
   line-height:1.15;
   margin-bottom:17px;
+  font-weight:700;
 }
 
 .author{
   font-size:13px;
   color:var(--muted);
 }
+
 
 /* =========================
    STJÄRNOR
@@ -240,6 +246,7 @@ button:disabled{
   transition:width .25s ease;
 }
 
+
 /* =========================
    TEXT
    ========================= */
@@ -257,12 +264,28 @@ button:disabled{
   min-height:20px;
 }
 
+.loading{
+  padding:25px 0;
+  color:var(--muted);
+  font-size:15px;
+}
+
+.error{
+  background:#fff0ed;
+  border:1px solid #e6b8ad;
+  color:#8b3b2d;
+  padding:12px 14px;
+  border-radius:12px;
+  margin:15px 0;
+}
+
+
 /* =========================
    LÄGG TILL BOK
    ========================= */
 
-.form-card{
-  max-width:600px;
+.add-box{
+  max-width:650px;
   background:var(--card);
   border:1px solid rgba(229,221,210,.9);
   border-radius:19px;
@@ -270,26 +293,29 @@ button:disabled{
   box-shadow:var(--shadow);
 }
 
-.form-label{
-  display:block;
-  font-weight:650;
-  font-size:14px;
-  margin:0 0 7px;
+.add-box h2{
+  font-family:Georgia,serif;
+  margin:0 0 20px;
+  font-size:27px;
 }
 
-.form-group{
-  margin-bottom:18px;
+.add-form{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
 }
 
-input{
-  width:100%;
-  outline:none;
+.add-form input{
+  flex:1 1 220px;
 }
 
-input:focus{
-  border-color:var(--accent);
-  box-shadow:0 0 0 3px rgba(141,93,59,.12);
+.add-form button{
+  background:var(--ink);
+  color:white;
+  border-color:var(--ink);
+  font-weight:600;
 }
+
 
 /* =========================
    ÖVERSIKT – TABELL
@@ -303,11 +329,6 @@ input:focus{
   overflow:hidden;
   box-shadow:var(--shadow);
 }
-
-/*
-   Varje rad har:
-   # | Bok | Gustav | Axel | Chris | Wille | Snitt
-*/
 
 .overview-row{
   display:grid;
@@ -336,6 +357,7 @@ input:focus{
   font-weight:700;
 }
 
+
 /* Placering */
 
 .rank{
@@ -344,11 +366,11 @@ input:focus{
   font-size:13px;
 }
 
+
 /* Boktitel */
 
 .book-name{
   min-width:0;
-
   padding:10px 12px;
 
   font-family:Georgia,serif;
@@ -359,6 +381,18 @@ input:focus{
   overflow:hidden;
   text-overflow:ellipsis;
 }
+
+.overview-header .book-name{
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    sans-serif;
+
+  font-size:18px;
+  font-weight:800;
+}
+
 
 /* Personkolumner */
 
@@ -385,11 +419,13 @@ input:focus{
   transform:none;
 }
 
-.selected-sort{
+.person-header.selected-sort,
+.average-header.selected-sort{
   color:var(--accent);
 }
 
-/* Betygen */
+
+/* Betyg */
 
 .score{
   text-align:center;
@@ -402,6 +438,7 @@ input:focus{
   font-size:18px;
   font-weight:800;
 }
+
 
 /* =========================
    MOBIL
@@ -421,11 +458,6 @@ input:focus{
     font-size:14px;
     line-height:1.45;
   }
-
-  /*
-     På mobil gör vi tabellen lite tajtare.
-     Boktiteln får mest plats.
-  */
 
   .overview-row{
     grid-template-columns:
@@ -449,6 +481,10 @@ input:focus{
     font-size:17px;
   }
 
+  .overview-header .book-name{
+    font-size:16px;
+  }
+
   .rank{
     font-size:12px;
   }
@@ -470,7 +506,16 @@ input:focus{
   .grid{
     grid-template-columns:1fr;
   }
+
+  .add-form{
+    flex-direction:column;
+  }
+
+  .add-form button{
+    width:100%;
+  }
 }
+
 
 /* =========================
    EXTRA LITEN MOBIL
@@ -521,8 +566,13 @@ input:focus{
 <div class="wrap">
 
 <header>
+
   <h1>📚 Bokklubben</h1>
-  <div class="sub" id="subtitle">Laddar…</div>
+
+  <div class="sub" id="subtitle">
+    Laddar…
+  </div>
+
 </header>
 
 
@@ -530,9 +580,11 @@ input:focus{
 
 
 <div id="content">
+
   <div class="loading">
     Hämtar böcker och betyg…
   </div>
+
 </div>
 
 
@@ -540,6 +592,7 @@ input:focus{
 
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 
 <script>
 
@@ -567,7 +620,11 @@ const db =
 let members = [];
 let books = [];
 let ratings = [];
-let selected = localStorage.getItem("bokklubbSelectedMember") || "Gustav";
+
+let selected =
+  localStorage.getItem("bokklubbSelectedMember")
+  || "Gustav";
+
 let tab = "rate";
 
 let overviewSort = "avg";
@@ -582,6 +639,7 @@ function esc(s){
 
   return String(s ?? "").replace(
     /[&<>"']/g,
+
     c => ({
       "&":"&amp;",
       "<":"&lt;",
@@ -594,7 +652,7 @@ function esc(s){
 }
 
 
-function getRating(bookId, memberId){
+function getRating(bookId,memberId){
 
   const r =
     ratings.find(
@@ -603,7 +661,9 @@ function getRating(bookId, memberId){
         x.member_id === memberId
     );
 
-  return r ? r.rating : null;
+  return r
+    ? r.rating
+    : null;
 
 }
 
@@ -684,7 +744,9 @@ function renderMembers(){
       `<button
         class="${m.name===selected?'active':''}"
         onclick="chooseMember('${esc(m.name)}')">
+
         👤 ${esc(m.name)}
+
       </button>`
 
     ).join("");
@@ -768,28 +830,38 @@ function renderBooks(){
             ).join("")}
 
             <div class="avg">
+
               ${a ? a.toFixed(1) : "—"}
+
               <span class="votes">
                 (${valid.length})
               </span>
+
             </div>
 
           </div>
 
 
           <div class="mine">
+
             Ditt betyg:
+
             <b>
-              ${mine ? mine+" / 5" : "inte satt"}
+              ${mine
+                ? mine+" / 5"
+                : "inte satt"}
             </b>
+
           </div>
 
 
           <div class="bar">
+
             <div
               class="fill"
               style="width:${a*20}%">
             </div>
+
           </div>
 
         </article>
@@ -826,15 +898,18 @@ async function rate(bookId,value){
     await db
       .from("ratings")
       .upsert(
+
         {
           book_id:bookId,
           member_id:member.id,
           rating:value
         },
+
         {
           onConflict:
             "book_id,member_id"
         }
+
       );
 
 
@@ -865,127 +940,233 @@ async function rate(bookId,value){
 
 
 /* =========================
+   OVERVIEW SORTING
+   ========================= */
+
+function sortOverviewBy(key){
+
+  if(overviewSort === key){
+
+    overviewDirection =
+      overviewDirection === "desc"
+        ? "asc"
+        : "desc";
+
+  } else {
+
+    overviewSort = key;
+
+    overviewDirection = "desc";
+
+  }
+
+  renderOverview();
+
+}
+
+
+/* =========================
    OVERVIEW
    ========================= */
-function sortOverviewBy(key){
-  if(overviewSort === key){
-    overviewDirection = overviewDirection === "desc" ? "asc" : "desc";
-  } else {
-    overviewSort = key;
-    overviewDirection = "desc";
-  }
-}
+
 function renderOverview(){
-const rows = books.map(b => {
-    const vals = getBookRatings(b.id);
+
+  const rows = books.map(b => {
+
+    const vals =
+      getBookRatings(b.id);
 
     return {
-      book: b,
-      vals: vals,
-      avg: avg(vals)
+      book:b,
+      vals:vals,
+      avg:avg(vals)
     };
+
   });
 
-  rows.sort((a,b) => {
+
+  rows.sort((a,b)=>{
 
     let aValue;
     let bValue;
 
+
     if(overviewSort === "avg"){
+
       aValue = a.avg;
       bValue = b.avg;
+
     } else {
-      const memberIndex = members.findIndex(
-        m => String(m.id) === String(overviewSort)
-      );
 
-      aValue = memberIndex >= 0
-        ? (a.vals[memberIndex] ?? -1)
-        : -1;
+      const memberIndex =
+        members.findIndex(
+          m =>
+            String(m.id) ===
+            String(overviewSort)
+        );
 
-      bValue = memberIndex >= 0
-        ? (b.vals[memberIndex] ?? -1)
-        : -1;
+
+      aValue =
+        memberIndex >= 0
+          ? (a.vals[memberIndex] ?? -1)
+          : -1;
+
+
+      bValue =
+        memberIndex >= 0
+          ? (b.vals[memberIndex] ?? -1)
+          : -1;
+
     }
+
+
+    /*
+       Böcker utan betyg hamnar sist,
+       oavsett sorteringsriktning.
+    */
+
+    if(aValue === -1 && bValue !== -1)
+      return 1;
+
+    if(bValue === -1 && aValue !== -1)
+      return -1;
+
+
+    if(aValue === bValue)
+      return a.book.id - b.book.id;
+
 
     return overviewDirection === "desc"
       ? bValue - aValue
       : aValue - bValue;
+
   });
 
+
   function arrow(key){
-    if(overviewSort !== key) return "";
-    return overviewDirection === "desc" ? " ↓" : " ↑";
+
+    if(overviewSort !== key)
+      return "";
+
+    return overviewDirection === "desc"
+      ? " ↓"
+      : " ↑";
+
   }
+
 
   document.getElementById("content").innerHTML = `
 
     <div class="legend">
-      Alla medlemmars betyg. Klicka på ett namn för att sortera.
+      Klicka på ett namn eller Snitt för att sortera.
     </div>
+
 
     <div class="overview-table">
 
+
       <div class="overview-row overview-header">
 
-        <div class="rank">#</div>
+        <div class="rank">
+          #
+        </div>
+
 
         <div class="book-name">
           Bok
         </div>
 
+
         ${members.map(m => `
+
           <button
-            class="person-header ${String(overviewSort) === String(m.id) ? "selected-sort" : ""}"
+            class="person-header ${
+              String(overviewSort) === String(m.id)
+                ? "selected-sort"
+                : ""
+            }"
+
             onclick="sortOverviewBy('${m.id}')"
-            title="Sortera efter ${esc(m.name)}"
-          >
-            ${esc(m.name)}${arrow(String(m.id))}
+
+            title="Sortera efter ${esc(m.name)}">
+
+            ${esc(m.name)}
+            ${arrow(String(m.id))}
+
           </button>
+
         `).join("")}
 
+
         <button
-          class="average-header ${overviewSort === "avg" ? "selected-sort" : ""}"
+          class="average-header ${
+            overviewSort === "avg"
+              ? "selected-sort"
+              : ""
+          }"
+
           onclick="sortOverviewBy('avg')"
-          title="Sortera efter snitt"
-        >
-          Snitt${arrow("avg")}
+
+          title="Sortera efter snitt">
+
+          Snitt
+          ${arrow("avg")}
+
         </button>
+
 
       </div>
 
-      ${rows.map((r,i) => `
+
+      ${rows.map((r,i)=>`
 
         <div class="overview-row">
 
           <div class="rank">
-            ${i + 1}
+            ${i+1}
           </div>
+
 
           <div
             class="book-name"
-            title="${esc(r.book.title)}"
-          >
+            title="${esc(r.book.title)}">
+
             ${esc(r.book.title)}
+
           </div>
 
-          ${r.vals.map(v => `
+
+          ${r.vals.map(v=>`
+
             <div class="score">
+
               ${v != null ? v : "–"}
+
             </div>
+
           `).join("")}
 
+
           <div class="average">
-            ${r.avg ? r.avg.toFixed(1) : "–"}
+
+            ${r.avg
+              ? r.avg.toFixed(1)
+              : "–"}
+
           </div>
+
 
         </div>
 
       `).join("")}
 
+
     </div>
+
   `;
+
 }
+
 
 /* =========================
    ADD BOOK
@@ -997,7 +1178,10 @@ function renderAddBook(){
 
     <div class="add-box">
 
-      <h2>➕ Lägg till bok</h2>
+      <h2>
+        ➕ Lägg till bok
+      </h2>
+
 
       <div class="add-form">
 
@@ -1005,27 +1189,31 @@ function renderAddBook(){
           id="newTitle"
           type="text"
           placeholder="Boktitel"
-          maxlength="200"
-        >
+          maxlength="200">
+
 
         <input
           id="newAuthor"
           type="text"
           placeholder="Författare (valfritt)"
-          maxlength="200"
-        >
+          maxlength="200">
+
 
         <button
           onclick="addBook()">
+
           Lägg till
+
         </button>
 
       </div>
+
 
       <div
         id="addStatus"
         class="status">
       </div>
+
 
     </div>
 
@@ -1077,8 +1265,12 @@ async function addBook(){
     await db
       .from("books")
       .insert({
+
         title:title,
-        author:author || null
+
+        author:
+          author || null
+
       });
 
 
@@ -1111,10 +1303,15 @@ function showError(msg){
   document
     .getElementById("content")
     .insertAdjacentHTML(
+
       "afterbegin",
+
       `<div class="error">
+
         ${esc(msg)}
+
       </div>`
+
     );
 
 }
@@ -1138,10 +1335,14 @@ function render(){
         id="members">
       </div>
 
+
       <div class="legend">
+
         Välj medlem och klicka sedan
         på stjärnorna för att sätta betyg.
+
       </div>
+
 
       <div
         class="grid"
@@ -1150,18 +1351,19 @@ function render(){
 
     `;
 
+
     renderMembers();
+
     renderBooks();
 
-  }
 
+  }
 
   else if(tab === "overview"){
 
     renderOverview();
 
   }
-
 
   else if(tab === "add"){
 
@@ -1189,12 +1391,14 @@ async function loadData(){
       .select("id,name")
       .order("id"),
 
+
     db
       .from("books")
       .select(
         "id,title,author,created_at"
       )
       .order("id"),
+
 
     db
       .from("ratings")
@@ -1241,6 +1445,7 @@ async function loadData(){
   document
     .getElementById("subtitle")
     .textContent =
+
       `${books.length} böcker · `
       + `${members.length} medlemmar · `
       + `betyg 1–5`;
